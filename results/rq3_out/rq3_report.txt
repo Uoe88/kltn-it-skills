@@ -1,0 +1,134 @@
+Vị trí: Backend, Frontend, Data Engineer, Data Scientist, AI Engineer | trục level: level_group (Entry / Middle / Senior / Lead+) | JD dùng: 873
+Nhãn lĩnh vực đã loại: artificial_intelligence, machine_learning, deep_learning, nlp, computer_vision; n_skill_groups điều chỉnh ở 147 JD
+Lọc: has_hard; loại 4 JD chỉ có noise và 66 JD thiếu level_group
+Skill hiếm theo nghề: tần suất < 5% trong JD của nghề (mọi level)
+Kỹ năng khó thủ công (đề xuất khởi đầu trong code (cần bạn duyệt)): kubernetes, helm, argocd, terraform, ansible, kafka, flink, spark, hadoop, scala, airflow, dbt, databricks, microservices, event_driven, software_architecture, mlops, rag
+
+=== Kiểm tra trục level: exp_min trung bình theo level_group (gộp 5 nghề) ===
+  Entry    n_with_exp=120  mean=1.64  median=2.0
+  Middle   n_with_exp=169  mean=3.37  median=3.0
+  Senior   n_with_exp=336  mean=4.92  median=5.0
+  Lead+    n_with_exp=118  mean=6.67  median=7.0
+
+=== Độ rộng (n_hard_skills_dedup): median [Q1-Q3] theo nghề x level; [n] = số JD ===
+  Backend         TẤT CẢ: 7 [5-11] [183] | Entry: 6 [4-10.75] [34] | Middle: 6 [5-10] [45] | Senior: 8 [5-11.5] [79] | Lead+: 9 [5-11] [25]
+  Frontend        TẤT CẢ: 7 [5-9] [105] | Entry: 6 [4-8] [33] | Middle: 5 [4-8.25] [28] | Senior: 8 [5.75-11] [40] | Lead+: 13.5 [11-17.75] [4]*
+  Data Engineer   TẤT CẢ: 8 [5-12] [217] | Entry: 6 [4-10] [31] | Middle: 8 [6-11] [33] | Senior: 9 [6-12] [118] | Lead+: 6 [4-9] [35]
+  Data Scientist  TẤT CẢ: 6 [4-8] [65] | Entry: 4 [3-7] [13]* | Middle: 5.5 [3.5-9.75] [10]* | Senior: 6 [4-8.25] [32] | Lead+: 5.5 [4-7.75] [10]*
+  AI Engineer     TẤT CẢ: 5 [3-7] [303] | Entry: 5 [3-6] [68] | Middle: 4.5 [3-8] [60] | Senior: 5 [3-7] [118] | Lead+: 4 [3-6] [57]
+  (* = ô có ít JD, chỉ mang tính tham khảo)
+
+=== Xu hướng theo level (Spearman, level thứ bậc 0-3; CI bootstrap 95%; Holm giữa các nghề) ===
+  [n_hard_skills_dedup]
+    Backend         n=183  rho=+0.11 [-0.03; +0.26]  p_holm=0.520
+    Frontend        n=105  rho=+0.30 [+0.11; +0.47]  p_holm=0.008
+    Data Engineer   n=217  rho=+0.02 [-0.10; +0.16]  p_holm=1.000
+    Data Scientist  n=65   rho=+0.12 [-0.10; +0.36]  p_holm=1.000
+    AI Engineer     n=303  rho=+0.00 [-0.11; +0.12]  p_holm=1.000
+  [n_hard_skills]
+    Backend         n=183  rho=+0.11 [-0.04; +0.26]  p_holm=0.571
+    Frontend        n=105  rho=+0.30 [+0.11; +0.46]  p_holm=0.011
+    Data Engineer   n=217  rho=+0.03 [-0.10; +0.15]  p_holm=1.000
+    Data Scientist  n=65   rho=+0.12 [-0.11; +0.34]  p_holm=0.980
+    AI Engineer     n=303  rho=+0.01 [-0.09; +0.12]  p_holm=1.000
+  [n_skill_groups]
+    Backend         n=183  rho=+0.17 [+0.02; +0.30]  p_holm=0.093
+    Frontend        n=105  rho=+0.28 [+0.10; +0.45]  p_holm=0.020
+    Data Engineer   n=217  rho=+0.05 [-0.09; +0.17]  p_holm=0.612
+    Data Scientist  n=65   rho=+0.17 [-0.09; +0.40]  p_holm=0.515
+    AI Engineer     n=303  rho=+0.06 [-0.03; +0.17]  p_holm=0.612
+  [n_rare_skills]
+    Backend         n=183  rho=+0.06 [-0.08; +0.20]  p_holm=1.000
+    Frontend        n=105  rho=+0.26 [+0.08; +0.45]  p_holm=0.034
+    Data Engineer   n=217  rho=+0.06 [-0.07; +0.19]  p_holm=1.000
+    Data Scientist  n=65   rho=+0.01 [-0.20; +0.23]  p_holm=1.000
+    AI Engineer     n=303  rho=+0.04 [-0.07; +0.14]  p_holm=1.000
+  [has_rare_skill]
+    Backend         n=183  rho=+0.07 [-0.07; +0.21]  p_holm=1.000
+    Frontend        n=105  rho=+0.21 [+0.03; +0.41]  p_holm=0.153
+    Data Engineer   n=217  rho=+0.05 [-0.10; +0.19]  p_holm=1.000
+    Data Scientist  n=65   rho=+0.01 [-0.21; +0.22]  p_holm=1.000
+    AI Engineer     n=303  rho=-0.02 [-0.13; +0.08]  p_holm=1.000
+  [n_hard_manual]
+    Backend         n=183  rho=+0.24 [+0.10; +0.39]  p_holm=0.004
+    Frontend        n=105  rho=+0.30 [+0.09; +0.46]  p_holm=0.005
+    Data Engineer   n=217  rho=+0.16 [+0.04; +0.29]  p_holm=0.034
+    Data Scientist  n=65   rho=+0.16 [-0.08; +0.37]  p_holm=0.194
+    AI Engineer     n=303  rho=+0.20 [+0.10; +0.31]  p_holm=0.002
+  [has_hard_manual]
+    Backend         n=183  rho=+0.29 [+0.15; +0.42]  p_holm=0.000
+    Frontend        n=105  rho=+0.31 [+0.08; +0.46]  p_holm=0.003
+    Data Engineer   n=217  rho=+0.24 [+0.11; +0.37]  p_holm=0.001
+    Data Scientist  n=65   rho=+0.11 [-0.13; +0.34]  p_holm=0.383
+    AI Engineer     n=303  rho=+0.21 [+0.10; +0.31]  p_holm=0.001
+  [n_tail_skills]
+    Backend         n=183  rho=+0.10 [-0.04; +0.25]  p_holm=0.633
+    Frontend        n=105  rho=+0.21 [+0.02; +0.40]  p_holm=0.142
+    Data Engineer   n=217  rho=-0.03 [-0.16; +0.11]  p_holm=1.000
+    Data Scientist  n=65   rho=+0.05 [-0.16; +0.28]  p_holm=1.000
+    AI Engineer     n=303  rho=-0.00 [-0.11; +0.10]  p_holm=1.000
+
+=== Kỹ năng hiếm của từng nghề ===
+  Backend         n=200  skill hiếm: 43/80 (53.8% số skill xuất hiện); chuẩn hóa cỡ 60 JD: 28.2 [21.0; 35.0]; lượt nhắc hiếm 11.3%; đuôi dài TB 1.01/JD
+  Frontend        n=122  skill hiếm: 42/71 (59.2% số skill xuất hiện); chuẩn hóa cỡ 60 JD: 30.7 [22.0; 38.0]; lượt nhắc hiếm 13.8%; đuôi dài TB 0.67/JD
+  Data Engineer   n=222  skill hiếm: 41/78 (52.6% số skill xuất hiện); chuẩn hóa cỡ 60 JD: 25.1 [19.0; 31.0]; lượt nhắc hiếm 8.8%; đuôi dài TB 0.54/JD
+  Data Scientist  n=66   skill hiếm: 19/46 (41.3% số skill xuất hiện); chuẩn hóa cỡ 60 JD: 18.2 [15.0; 19.0]; lượt nhắc hiếm 9.0%; đuôi dài TB 0.64/JD
+  AI Engineer     n=329  skill hiếm: 79/103 (76.7% số skill xuất hiện); chuẩn hóa cỡ 60 JD: 43.0 [33.0; 54.0]; lượt nhắc hiếm 26.2%; đuôi dài TB 0.7/JD
+
+=== Kỹ năng theo level: nhóm thấp (Entry+Middle) vs nhóm cao (Senior+Lead+) ===
+  Backend         thấp=79, cao=104: skill only_high quan sát=3, kỳ vọng ngẫu nhiên=0.4 (p95=2) -> vượt ngưỡng ngẫu nhiên (p95)
+      ci_cd                  thấp  16.5% -> cao  37.5% (+21.0 điểm %), p_holm=0.0856 
+      microservices          thấp  27.8% -> cao  48.1% (+20.2 điểm %), p_holm=0.2826 khó 
+      event_driven           thấp   8.9% -> cao  26.0% (+17.1 điểm %), p_holm=0.1736 khó 
+      azure                  thấp   3.8% -> cao  18.3% (+14.5 điểm %), p_holm=0.1248 
+      aws                    thấp  16.5% -> cao  30.8% (+14.3 điểm %), p_holm=1.0 
+      typescript             thấp   0.0% -> cao  12.5% (+12.5 điểm %), p_holm=0.0333 only_high 
+      gcp                    thấp   3.8% -> cao  15.4% (+11.6 điểm %), p_holm=0.5963 
+      node_js                thấp   3.8% -> cao  12.5% (+8.7 điểm %), p_holm=1.0 
+  Frontend        thấp=61, cao=44: skill only_high quan sát=1, kỳ vọng ngẫu nhiên=0.1 (p95=1) -> không vượt ngưỡng ngẫu nhiên
+      react                  thấp  42.6% -> cao  81.8% (+39.2 điểm %), p_holm=0.0019 
+      typescript             thấp  32.8% -> cao  65.9% (+33.1 điểm %), p_holm=0.0457 
+      ci_cd                  thấp  13.1% -> cao  34.1% (+21.0 điểm %), p_holm=0.4462 
+      aws                    thấp   3.3% -> cao  20.5% (+17.2 điểm %), p_holm=0.2408 
+      playwright             thấp   1.6% -> cao  15.9% (+14.3 điểm %), p_holm=0.2796 
+      microservices          thấp   1.6% -> cao  15.9% (+14.3 điểm %), p_holm=0.2796 khó 
+      react_native           thấp   8.2% -> cao  20.5% (+12.3 điểm %), p_holm=1.0 
+      gcp                    thấp   0.0% -> cao  11.4% (+11.4 điểm %), p_holm=0.3262 only_high hiếm 
+  Data Engineer   thấp=64, cao=153: skill only_high quan sát=4, kỳ vọng ngẫu nhiên=1.4 (p95=3) -> vượt ngưỡng ngẫu nhiên (p95)
+      ci_cd                  thấp  12.5% -> cao  24.8% (+12.3 điểm %), p_holm=1.0 
+      databricks             thấp   3.1% -> cao  15.0% (+11.9 điểm %), p_holm=0.5229 khó 
+      kafka                  thấp  20.3% -> cao  31.4% (+11.1 điểm %), p_holm=1.0 khó 
+      gcp                    thấp  23.4% -> cao  32.0% (+8.6 điểm %), p_holm=1.0 
+      r                      thấp   0.0% -> cao   7.8% (+7.8 điểm %), p_holm=0.9854 only_high 
+      mlops                  thấp   0.0% -> cao   7.8% (+7.8 điểm %), p_holm=0.9854 only_high khó 
+      agile                  thấp   6.2% -> cao  13.7% (+7.5 điểm %), p_holm=1.0 
+      flink                  thấp   3.1% -> cao  10.5% (+7.3 điểm %), p_holm=1.0 khó 
+  Data Scientist  thấp=23, cao=42: skill only_high quan sát=4, kỳ vọng ngẫu nhiên=0.7 (p95=3) -> vượt ngưỡng ngẫu nhiên (p95)
+      agile                  thấp   0.0% -> cao  16.7% (+16.7 điểm %), p_holm=1.0 only_high 
+      sql                    thấp  65.2% -> cao  81.0% (+15.7 điểm %), p_holm=1.0 
+      gcp                    thấp   4.3% -> cao  19.0% (+14.7 điểm %), p_holm=1.0 
+      java                   thấp   0.0% -> cao  14.3% (+14.3 điểm %), p_holm=1.0 only_high 
+      scala                  thấp   0.0% -> cao  14.3% (+14.3 điểm %), p_holm=1.0 only_high khó 
+      pytorch                thấp  13.0% -> cao  26.2% (+13.1 điểm %), p_holm=1.0 
+      scrum                  thấp   0.0% -> cao  11.9% (+11.9 điểm %), p_holm=1.0 only_high 
+      data_warehouse         thấp   4.3% -> cao  14.3% (+9.9 điểm %), p_holm=1.0 
+  AI Engineer     thấp=128, cao=175: skill only_high quan sát=2, kỳ vọng ngẫu nhiên=0.6 (p95=2) -> không vượt ngưỡng ngẫu nhiên
+      mlops                  thấp  10.9% -> cao  19.4% (+8.5 điểm %), p_holm=1.0 khó 
+      software_architecture  thấp   3.1% -> cao  10.9% (+7.7 điểm %), p_holm=0.8273 khó 
+      rag                    thấp  10.9% -> cao  17.1% (+6.2 điểm %), p_holm=1.0 khó 
+      azure                  thấp  14.8% -> cao  20.6% (+5.7 điểm %), p_holm=1.0 
+      kubernetes             thấp  10.9% -> cao  16.6% (+5.6 điểm %), p_holm=1.0 khó 
+      generative_ai          thấp   7.8% -> cao  13.1% (+5.3 điểm %), p_holm=1.0 
+      llm                    thấp  38.3% -> cao  42.9% (+4.6 điểm %), p_holm=1.0 
+      aws                    thấp  16.4% -> cao  20.6% (+4.2 điểm %), p_holm=1.0 
+
+=== Hạn chế cần ghi trong khóa luận ===
+  - Nguồn tuyển dụng: dữ liệu gộp nhiều nền tảng, mỗi nền tảng ghi số skill và gắn tag khác nhau, cơ cấu nền tảng cũng khác giữa các nghề.
+    Độ rộng chịu một phần ảnh hưởng từ phong cách đăng tin của nền tảng; nghiên cứu không tách riêng yếu tố này.
+  - Độ rộng chỉ được mô tả và đo xu hướng theo level trong từng nghề, không kiểm định / xếp hạng giữa các nghề.
+  - level_group lấy từ nhãn level của JD; ô Lead+ ở một số nghề (vd. Frontend) có rất ít JD.
+  - n_skill_groups đếm số nhóm taxonomy (nhóm không cân bằng kích thước), chỉ là thước đo gần đúng của độ phức tạp tech stack.
+  - 'Hiếm' tính theo nghề (< ngưỡng % trong nghề) và phụ thuộc cỡ mẫu nghề; số skill hiếm được chuẩn hóa bằng lấy mẫu con cùng cỡ.
+  - Danh sách kỹ năng 'khó' là phân loại thủ công theo kiến thức chuyên ngành.
+  - Skill 'chỉ có ở level cao' dễ xuất hiện do ngẫu nhiên khi nhóm cao nhỏ: luôn đối chiếu với đường cơ sở hoán vị.
+  - JD có thể trùng theo công ty, CI có thể hẹp hơn thực tế.

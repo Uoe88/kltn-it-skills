@@ -1,0 +1,17 @@
+﻿child,implied_parent,child_canonical,parent_canonical,n_child_jobs,pct_parent_given_child,child_in_binary,parent_in_binary
+skill_azure_synapse,skill_azure,Azure Synapse,Azure,4,100.0,False,True
+skill_azure_synapse,skill_data_warehouse,Azure Synapse,Data Warehouse,4,100.0,False,True
+skill_bigquery,skill_gcp,BigQuery,GCP,75,100.0,True,True
+skill_bigquery,skill_data_warehouse,BigQuery,Data Warehouse,75,100.0,True,True
+skill_dynamodb,skill_aws,DynamoDB,AWS,14,100.0,False,True
+skill_dynamodb,skill_nosql,DynamoDB,NoSQL,14,100.0,False,True
+skill_github_actions,skill_ci_cd,GitHub Actions,CI/CD,97,100.0,True,True
+skill_gitlab_ci,skill_ci_cd,GitLab CI,CI/CD,64,100.0,True,True
+skill_jenkins,skill_ci_cd,Jenkins,CI/CD,127,100.0,True,True
+skill_next_js,skill_react,Next.js,React,91,100.0,True,True
+skill_redshift,skill_aws,Redshift,AWS,31,100.0,True,True
+skill_redshift,skill_data_warehouse,Redshift,Data Warehouse,31,100.0,True,True
+skill_sagemaker,skill_aws,SageMaker,AWS,12,100.0,False,True
+skill_snowflake,skill_data_warehouse,Snowflake,Data Warehouse,49,100.0,True,True
+skill_spring_boot,skill_spring,Spring Boot,Spring,139,100.0,True,True
+skill_vertex_ai,skill_gcp,Vertex AI,GCP,14,100.0,False,True

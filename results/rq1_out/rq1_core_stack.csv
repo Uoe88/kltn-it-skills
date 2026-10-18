@@ -1,0 +1,68 @@
+﻿role,n_jobs,skill,n,pct,ci_low_pct,ci_high_pct,tier,is_concept,implied_children,role_n_below_small_n
+Backend,200,skill_java,103,51.5,44.6,58.3,core,False,,False
+Backend,200,skill_sql,73,36.5,30.1,43.4,core,False,,False
+Backend,200,skill_microservices,73,36.5,30.1,43.4,core,True,,False
+Backend,200,skill_spring,72,36.0,29.7,42.9,core,False,spring_boot,False
+Backend,200,skill_spring_boot,65,32.5,26.4,39.3,core,False,,False
+Backend,200,skill_postgresql,56,28.0,22.2,34.6,common,False,,False
+Backend,200,skill_ci_cd,55,27.5,21.8,34.1,common,False,"github_actions, gitlab_ci, jenkins",False
+Backend,200,skill_docker,53,26.5,20.9,33.0,common,False,,False
+Backend,200,skill_aws,48,24.0,18.6,30.4,common,False,redshift,False
+Backend,200,skill_mysql,48,24.0,18.6,30.4,common,False,,False
+Backend,200,skill_kubernetes,45,22.5,17.3,28.8,common,False,,False
+Backend,200,skill_kafka,45,22.5,17.3,28.8,common,False,,False
+Backend,200,skill_python,39,19.5,14.6,25.5,common,False,,False
+Backend,200,skill_git,37,18.5,13.7,24.5,common,False,,False
+Backend,200,skill_go,37,18.5,13.7,24.5,common,False,,False
+Backend,200,skill_redis,37,18.5,13.7,24.5,common,False,,False
+Backend,200,skill_event_driven,35,17.5,12.9,23.4,common,True,,False
+Backend,200,skill_dotnet,33,16.5,12.0,22.3,common,False,,False
+Backend,200,skill_oracle,30,15.0,10.7,20.6,common,False,,False
+Frontend,122,skill_javascript,83,68.0,59.3,75.6,core,False,,False
+Frontend,122,skill_html,74,60.7,51.8,68.9,core,False,,False
+Frontend,122,skill_css,71,58.2,49.3,66.6,core,False,,False
+Frontend,122,skill_react,70,57.4,48.5,65.8,core,False,next_js,False
+Frontend,122,skill_typescript,54,44.3,35.8,53.1,core,False,,False
+Frontend,122,skill_git,33,27.0,20.0,35.5,common,False,,False
+Frontend,122,skill_angular,25,20.5,14.3,28.5,common,False,,False
+Frontend,122,skill_ci_cd,23,18.9,12.9,26.7,common,False,"github_actions, gitlab_ci, jenkins",False
+Frontend,122,skill_graphql,22,18.0,12.2,25.8,common,False,,False
+Frontend,122,skill_redux,21,17.2,11.5,24.9,common,False,,False
+Data Engineer,222,skill_sql,158,71.2,64.9,76.7,core,False,,False
+Data Engineer,222,skill_python,152,68.5,62.1,74.2,core,False,,False
+Data Engineer,222,skill_etl_elt,109,49.1,42.6,55.6,core,False,,False
+Data Engineer,222,skill_data_warehouse,91,41.0,34.7,47.6,core,True,"bigquery, redshift, snowflake",False
+Data Engineer,222,skill_spark,90,40.5,34.3,47.1,core,False,,False
+Data Engineer,222,skill_aws,88,39.6,33.4,46.2,core,False,redshift,False
+Data Engineer,222,skill_azure,74,33.3,27.5,39.8,core,False,,False
+Data Engineer,222,skill_airflow,68,30.6,24.9,37.0,core,False,,False
+Data Engineer,222,skill_gcp,65,29.3,23.7,35.6,common,False,bigquery,False
+Data Engineer,222,skill_kafka,61,27.5,22.0,33.7,common,False,,False
+Data Engineer,222,skill_ci_cd,47,21.2,16.3,27.0,common,False,"github_actions, gitlab_ci, jenkins",False
+Data Engineer,222,skill_dbt,45,20.3,15.5,26.0,common,False,,False
+Data Engineer,222,skill_java,40,18.0,13.5,23.6,common,False,,False
+Data Engineer,222,skill_data_lake,39,17.6,13.1,23.1,common,True,,False
+Data Engineer,222,skill_docker,38,17.1,12.7,22.6,common,False,,False
+Data Engineer,222,skill_postgresql,35,15.8,11.6,21.1,common,False,,False
+Data Engineer,222,skill_kubernetes,34,15.3,11.2,20.6,common,False,,False
+Data Engineer,222,skill_snowflake,34,15.3,11.2,20.6,common,False,,False
+Data Scientist,66,skill_python,60,90.9,81.6,95.8,core,False,,True
+Data Scientist,66,skill_sql,50,75.8,64.2,84.5,core,False,,True
+Data Scientist,66,skill_spark,24,36.4,25.8,48.4,core,False,,True
+Data Scientist,66,skill_scikit_learn,19,28.8,19.3,40.6,common,False,,True
+Data Scientist,66,skill_tensorflow,16,24.2,15.5,35.8,common,False,,True
+Data Scientist,66,skill_pytorch,15,22.7,14.3,34.2,common,False,,True
+Data Scientist,66,skill_aws,14,21.2,13.1,32.5,common,False,redshift,True
+Data Scientist,66,skill_mlops,14,21.2,13.1,32.5,common,True,,True
+Data Scientist,66,skill_r,13,19.7,11.9,30.8,common,False,,True
+Data Scientist,66,skill_azure,12,18.2,10.7,29.1,common,False,,True
+Data Scientist,66,skill_pandas,11,16.7,9.6,27.4,common,False,,True
+Data Scientist,66,skill_power_bi,10,15.2,8.4,25.7,common,False,,True
+AI Engineer,329,skill_python,193,58.7,53.3,63.9,core,False,,False
+AI Engineer,329,skill_llm,129,39.2,34.1,44.6,core,False,,False
+AI Engineer,329,skill_aws,59,17.9,14.2,22.4,common,False,redshift,False
+AI Engineer,329,skill_azure,57,17.3,13.6,21.8,common,False,,False
+AI Engineer,329,skill_rest_api,57,17.3,13.6,21.8,common,False,,False
+AI Engineer,329,skill_pytorch,55,16.7,13.1,21.1,common,False,,False
+AI Engineer,329,skill_ci_cd,54,16.4,12.8,20.8,common,False,"github_actions, gitlab_ci, jenkins",False
+AI Engineer,329,skill_docker,54,16.4,12.8,20.8,common,False,,False

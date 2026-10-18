@@ -1,0 +1,208 @@
+Vị trí: Backend, Frontend, Data Engineer, Data Scientist, AI Engineer
+Nhãn lĩnh vực đã loại khỏi danh sách công nghệ: artificial_intelligence, machine_learning, deep_learning, nlp, computer_vision
+Tầng core: >= 30% JD của vị trí; tầng common: >= 15% (giá trị điểm, CI chỉ để tham khảo)
+Lọc: has_skills = 1 và skills_status = has_hard; đã loại 4 JD chỉ có noise
+Luật cha-con: 10 cặp con -> cha (nguồn: data\skill_implied_pairs.csv); tỷ lệ skill cha gồm cả JD chỉ ghi skill con
+
+======== Backend: n = 200 JD
+  Tầng core: 5 skill
+    java                        51.5%  (CI95 44.6-58.3%, n=103)
+    sql                         36.5%  (CI95 30.1-43.4%, n=73)
+    microservices               36.5%  (CI95 30.1-43.4%, n=73)  [khái niệm]
+    spring                      36.0%  (CI95 29.7-42.9%, n=72)  [gồm cả JD chỉ ghi: spring_boot]
+    spring_boot                 32.5%  (CI95 26.4-39.3%, n=65)
+  Tầng common: 14 skill (hiển thị 10 đầu)
+    postgresql                  28.0%  (CI95 22.2-34.6%, n=56)
+    ci_cd                       27.5%  (CI95 21.8-34.1%, n=55)  [gồm cả JD chỉ ghi: github_actions, gitlab_ci, jenkins]
+    docker                      26.5%  (CI95 20.9-33.0%, n=53)
+    aws                         24.0%  (CI95 18.6-30.4%, n=48)  [gồm cả JD chỉ ghi: redshift]
+    mysql                       24.0%  (CI95 18.6-30.4%, n=48)
+    kubernetes                  22.5%  (CI95 17.3-28.8%, n=45)
+    kafka                       22.5%  (CI95 17.3-28.8%, n=45)
+    python                      19.5%  (CI95 14.6-25.5%, n=39)
+    git                         18.5%  (CI95 13.7-24.5%, n=37)
+    go                          18.5%  (CI95 13.7-24.5%, n=37)
+  Tổ hợp (support >= 10%), top 10 mỗi cỡ; excess = support thực tế - kỳ vọng nếu độc lập:
+    [3 skill] java + microservices + spring  18.0% (n=36, kỳ vọng 6.8%, excess +11.2, kỳ vọng từ các cặp 17.8%, excess so với cặp +0.2)
+    [3 skill] java + microservices + spring_boot  17.5% (n=35, kỳ vọng 6.1%, excess +11.4, kỳ vọng từ các cặp 17.3%, excess so với cặp +0.2)
+    [3 skill] java + spring + kubernetes  15.5% (n=31, kỳ vọng 4.2%, excess +11.3, kỳ vọng từ các cặp 15.4%, excess so với cặp +0.1)
+    [3 skill] java + spring + kafka  15.5% (n=31, kỳ vọng 4.2%, excess +11.3, kỳ vọng từ các cặp 15.7%, excess so với cặp -0.2)
+    [3 skill] java + spring + docker  14.5% (n=29, kỳ vọng 4.9%, excess +9.6, kỳ vọng từ các cặp 14.3%, excess so với cặp +0.2)
+    [3 skill] java + spring_boot + kubernetes  14.5% (n=29, kỳ vọng 3.8%, excess +10.7, kỳ vọng từ các cặp 14.4%, excess so với cặp +0.1)
+    [3 skill] java + spring_boot + kafka  14.5% (n=29, kỳ vọng 3.8%, excess +10.7, kỳ vọng từ các cặp 14.8%, excess so với cặp -0.3)
+    [3 skill] java + docker + kubernetes  14.5% (n=29, kỳ vọng 3.1%, excess +11.4, kỳ vọng từ các cặp 14.0%, excess so với cặp +0.5)
+    [3 skill] java + spring_boot + docker  13.5% (n=27, kỳ vọng 4.4%, excess +9.1, kỳ vọng từ các cặp 13.3%, excess so với cặp +0.2)
+    [3 skill] java + spring + postgresql  12.5% (n=25, kỳ vọng 5.2%, excess +7.3, kỳ vọng từ các cặp 12.3%, excess so với cặp +0.2)
+    [2 skill] java + spring  35.5% (n=71, kỳ vọng 18.5%, excess +17.0)
+    [2 skill] java + spring_boot  32.0% (n=64, kỳ vọng 16.7%, excess +15.3)
+    [2 skill] java + microservices  23.5% (n=47, kỳ vọng 18.8%, excess +4.7)
+    [2 skill] java + kubernetes  18.5% (n=37, kỳ vọng 11.6%, excess +6.9)
+    [2 skill] java + sql  18.0% (n=36, kỳ vọng 18.8%, excess -0.8)
+    [2 skill] java + docker  18.0% (n=36, kỳ vọng 13.6%, excess +4.4)
+    [2 skill] microservices + spring  18.0% (n=36, kỳ vọng 13.1%, excess +4.9)
+    [2 skill] java + ci_cd  17.5% (n=35, kỳ vọng 14.2%, excess +3.3)
+    [2 skill] microservices + spring_boot  17.5% (n=35, kỳ vọng 11.9%, excess +5.6)
+    [2 skill] java + kafka  17.0% (n=34, kỳ vọng 11.6%, excess +5.4)
+    [ứng viên thay thế] spring_boot + dotnet: phi=-0.308, n_both=0, kỳ vọng 10.7 JD
+    [ứng viên thay thế] spring + dotnet: phi=-0.305, n_both=1, kỳ vọng 11.9 JD
+    [ứng viên thay thế] spring + python: phi=-0.264, n_both=4, kỳ vọng 14.0 JD
+
+======== Frontend: n = 122 JD
+  Tầng core: 5 skill
+    javascript                  68.0%  (CI95 59.3-75.6%, n=83)
+    html                        60.7%  (CI95 51.8-68.9%, n=74)
+    css                         58.2%  (CI95 49.3-66.6%, n=71)
+    react                       57.4%  (CI95 48.5-65.8%, n=70)  [gồm cả JD chỉ ghi: next_js]
+    typescript                  44.3%  (CI95 35.8-53.1%, n=54)
+  Tầng common: 5 skill
+    git                         27.0%  (CI95 20.0-35.5%, n=33)
+    angular                     20.5%  (CI95 14.3-28.5%, n=25)
+    ci_cd                       18.9%  (CI95 12.9-26.7%, n=23)  [gồm cả JD chỉ ghi: github_actions, gitlab_ci, jenkins]
+    graphql                     18.0%  (CI95 12.2-25.8%, n=22)
+    redux                       17.2%  (CI95 11.5-24.9%, n=21)
+  Tổ hợp (support >= 10%), top 10 mỗi cỡ; excess = support thực tế - kỳ vọng nếu độc lập:
+    [3 skill] javascript + html + css  45.1% (n=55, kỳ vọng 24.0%, excess +21.1, kỳ vọng từ các cặp 45.6%, excess so với cặp -0.6)
+    [3 skill] html + css + react  27.0% (n=33, kỳ vọng 20.3%, excess +6.8, kỳ vọng từ các cặp 25.6%, excess so với cặp +1.4)
+    [3 skill] javascript + html + react  23.8% (n=29, kỳ vọng 23.7%, excess +0.1, kỳ vọng từ các cặp 24.1%, excess so với cặp -0.3)
+    [3 skill] javascript + css + react  23.8% (n=29, kỳ vọng 22.7%, excess +1.1, kỳ vọng từ các cặp 24.3%, excess so với cặp -0.5)
+    [3 skill] javascript + react + typescript  23.8% (n=29, kỳ vọng 17.3%, excess +6.5, kỳ vọng từ các cặp 23.1%, excess so với cặp +0.7)
+    [3 skill] html + css + typescript  22.1% (n=27, kỳ vọng 15.6%, excess +6.5, kỳ vọng từ các cặp 21.7%, excess so với cặp +0.5)
+    [3 skill] javascript + html + typescript  18.0% (n=22, kỳ vọng 18.3%, excess -0.2, kỳ vọng từ các cặp 20.0%, excess so với cặp -2.0)
+    [3 skill] javascript + css + typescript  17.2% (n=21, kỳ vọng 17.5%, excess -0.3, kỳ vọng từ các cặp 19.6%, excess so với cặp -2.4)
+    [3 skill] html + css + angular  16.4% (n=20, kỳ vọng 7.2%, excess +9.2, kỳ vọng từ các cặp 16.0%, excess so với cặp +0.4)
+    [3 skill] html + react + typescript  15.6% (n=19, kỳ vọng 15.4%, excess +0.2, kỳ vọng từ các cặp 16.7%, excess so với cặp -1.1)
+    [2 skill] html + css  54.9% (n=67, kỳ vọng 35.3%, excess +19.6)
+    [2 skill] javascript + html  48.4% (n=59, kỳ vọng 41.3%, excess +7.1)
+    [2 skill] javascript + css  48.4% (n=59, kỳ vọng 39.6%, excess +8.8)
+    [2 skill] javascript + react  39.3% (n=48, kỳ vọng 39.0%, excess +0.3)
+    [2 skill] react + typescript  33.6% (n=41, kỳ vọng 25.4%, excess +8.2)
+    [2 skill] javascript + typescript  30.3% (n=37, kỳ vọng 30.1%, excess +0.2)
+    [2 skill] html + react  28.7% (n=35, kỳ vọng 34.8%, excess -6.1)
+    [2 skill] css + react  27.9% (n=34, kỳ vọng 33.4%, excess -5.5)
+    [2 skill] html + typescript  24.6% (n=30, kỳ vọng 26.8%, excess -2.3)
+    [2 skill] css + typescript  23.0% (n=28, kỳ vọng 25.8%, excess -2.8)
+    [ứng viên thay thế] html + ci_cd: phi=-0.255, n_both=8, kỳ vọng 14.0 JD
+    [ứng viên thay thế] html + react: phi=-0.253, n_both=35, kỳ vọng 42.5 JD
+    [ứng viên thay thế] css + react: phi=-0.226, n_both=34, kỳ vọng 40.7 JD
+
+======== Data Engineer: n = 222 JD
+  Tầng core: 8 skill
+    sql                         71.2%  (CI95 64.9-76.7%, n=158)
+    python                      68.5%  (CI95 62.1-74.2%, n=152)
+    etl_elt                     49.1%  (CI95 42.6-55.6%, n=109)
+    data_warehouse              41.0%  (CI95 34.7-47.6%, n=91)  [khái niệm]  [gồm cả JD chỉ ghi: bigquery, redshift, snowflake]
+    spark                       40.5%  (CI95 34.3-47.1%, n=90)
+    aws                         39.6%  (CI95 33.4-46.2%, n=88)  [gồm cả JD chỉ ghi: redshift]
+    azure                       33.3%  (CI95 27.5-39.8%, n=74)
+    airflow                     30.6%  (CI95 24.9-37.0%, n=68)
+  Tầng common: 10 skill
+    gcp                         29.3%  (CI95 23.7-35.6%, n=65)  [gồm cả JD chỉ ghi: bigquery]
+    kafka                       27.5%  (CI95 22.0-33.7%, n=61)
+    ci_cd                       21.2%  (CI95 16.3-27.0%, n=47)  [gồm cả JD chỉ ghi: github_actions, gitlab_ci, jenkins]
+    dbt                         20.3%  (CI95 15.5-26.0%, n=45)
+    java                        18.0%  (CI95 13.5-23.6%, n=40)
+    data_lake                   17.6%  (CI95 13.1-23.1%, n=39)  [khái niệm]
+    docker                      17.1%  (CI95 12.7-22.6%, n=38)
+    postgresql                  15.8%  (CI95 11.6-21.1%, n=35)
+    kubernetes                  15.3%  (CI95 11.2-20.6%, n=34)
+    snowflake                   15.3%  (CI95 11.2-20.6%, n=34)
+  Tổ hợp (support >= 10%), top 10 mỗi cỡ; excess = support thực tế - kỳ vọng nếu độc lập:
+    [3 skill] sql + python + etl_elt  36.9% (n=82, kỳ vọng 23.9%, excess +13.0, kỳ vọng từ các cặp 36.4%, excess so với cặp +0.5)
+    [3 skill] sql + python + data_warehouse  31.1% (n=69, kỳ vọng 20.0%, excess +11.1, kỳ vọng từ các cặp 29.1%, excess so với cặp +2.0)
+    [3 skill] sql + python + spark  28.8% (n=64, kỳ vọng 19.8%, excess +9.1, kỳ vọng từ các cặp 28.7%, excess so với cặp +0.1)
+    [3 skill] sql + python + aws  26.6% (n=59, kỳ vọng 19.3%, excess +7.3, kỳ vọng từ các cặp 25.1%, excess so với cặp +1.5)
+    [3 skill] sql + etl_elt + data_warehouse  26.1% (n=58, kỳ vọng 14.3%, excess +11.8, kỳ vọng từ các cặp 25.0%, excess so với cặp +1.1)
+    [3 skill] python + etl_elt + data_warehouse  24.8% (n=55, kỳ vọng 13.8%, excess +11.0, kỳ vọng từ các cặp 24.4%, excess so với cặp +0.4)
+    [3 skill] sql + python + azure  23.4% (n=52, kỳ vọng 16.2%, excess +7.2, kỳ vọng từ các cặp 22.5%, excess so với cặp +0.9)
+    [3 skill] sql + python + airflow  23.4% (n=52, kỳ vọng 14.9%, excess +8.5, kỳ vọng từ các cặp 21.6%, excess so với cặp +1.8)
+    [3 skill] python + etl_elt + spark  22.5% (n=50, kỳ vọng 13.6%, excess +8.9, kỳ vọng từ các cặp 22.1%, excess so với cặp +0.4)
+    [3 skill] python + etl_elt + aws  22.5% (n=50, kỳ vọng 13.3%, excess +9.2, kỳ vọng từ các cặp 22.1%, excess so với cặp +0.4)
+    [2 skill] sql + python  56.3% (n=125, kỳ vọng 48.7%, excess +7.6)
+    [2 skill] sql + etl_elt  41.9% (n=93, kỳ vọng 34.9%, excess +6.9)
+    [2 skill] python + etl_elt  41.0% (n=91, kỳ vọng 33.6%, excess +7.4)
+    [2 skill] sql + data_warehouse  34.2% (n=76, kỳ vọng 29.2%, excess +5.1)
+    [2 skill] python + spark  33.8% (n=75, kỳ vọng 27.8%, excess +6.0)
+    [2 skill] python + data_warehouse  32.9% (n=73, kỳ vọng 28.1%, excess +4.8)
+    [2 skill] sql + spark  32.4% (n=72, kỳ vọng 28.9%, excess +3.6)
+    [2 skill] python + aws  31.5% (n=70, kỳ vọng 27.1%, excess +4.4)
+    [2 skill] sql + aws  28.4% (n=63, kỳ vọng 28.2%, excess +0.2)
+    [2 skill] etl_elt + data_warehouse  27.9% (n=62, kỳ vọng 20.1%, excess +7.8)
+    [ứng viên thay thế] azure + docker: phi=-0.144, n_both=7, kỳ vọng 12.7 JD
+    [ứng viên thay thế] gcp + ci_cd: phi=-0.115, n_both=9, kỳ vọng 13.8 JD
+
+======== Data Scientist: n = 66 JD   [CẢNH BÁO: cỡ mẫu nhỏ]
+  Tầng core: 3 skill
+    python                      90.9%  (CI95 81.6-95.8%, n=60)
+    sql                         75.8%  (CI95 64.2-84.5%, n=50)
+    spark                       36.4%  (CI95 25.8-48.4%, n=24)
+  Tầng common: 9 skill
+    scikit_learn                28.8%  (CI95 19.3-40.6%, n=19)
+    tensorflow                  24.2%  (CI95 15.5-35.8%, n=16)
+    pytorch                     22.7%  (CI95 14.3-34.2%, n=15)
+    aws                         21.2%  (CI95 13.1-32.5%, n=14)  [gồm cả JD chỉ ghi: redshift]
+    mlops                       21.2%  (CI95 13.1-32.5%, n=14)  [khái niệm]
+    r                           19.7%  (CI95 11.9-30.8%, n=13)
+    azure                       18.2%  (CI95 10.7-29.1%, n=12)
+    pandas                      16.7%  (CI95 9.6-27.4%, n=11)
+    power_bi                    15.2%  (CI95 8.4-25.7%, n=10)
+  Tổ hợp (support >= 10%), top 10 mỗi cỡ; excess = support thực tế - kỳ vọng nếu độc lập:
+    [3 skill] python + sql + spark  27.3% (n=18, kỳ vọng 25.0%, excess +2.2, kỳ vọng từ các cặp 27.6%, excess so với cặp -0.4)
+    [3 skill] python + sql + scikit_learn  18.2% (n=12, kỳ vọng 19.8%, excess -1.6, kỳ vọng từ các cặp 17.9%, excess so với cặp +0.2)
+    [3 skill] python + scikit_learn + tensorflow  18.2% (n=12, kỳ vọng 6.3%, excess +11.8, kỳ vọng từ các cặp 18.3%, excess so với cặp -0.1)
+    [3 skill] python + sql + r  16.7% (n=11, kỳ vọng 13.6%, excess +3.1, kỳ vọng từ các cặp 16.7%, excess so với cặp +0.0)
+    [3 skill] python + scikit_learn + pytorch  16.7% (n=11, kỳ vọng 5.9%, excess +10.7, kỳ vọng từ các cặp 17.2%, excess so với cặp -0.5)
+    [3 skill] python + tensorflow + pytorch  16.7% (n=11, kỳ vọng 5.0%, excess +11.7, kỳ vọng từ các cặp 16.8%, excess so với cặp -0.1)
+    [3 skill] scikit_learn + tensorflow + pytorch  16.7% (n=11, kỳ vọng 1.6%, excess +15.1, kỳ vọng từ các cặp 16.3%, excess so với cặp +0.4)
+    [3 skill] python + sql + tensorflow  15.2% (n=10, kỳ vọng 16.7%, excess -1.5, kỳ vọng từ các cặp 14.5%, excess so với cặp +0.7)
+    [3 skill] python + sql + pytorch  15.2% (n=10, kỳ vọng 15.7%, excess -0.5, kỳ vọng từ các cặp 14.8%, excess so với cặp +0.3)
+    [3 skill] python + sql + aws  15.2% (n=10, kỳ vọng 14.6%, excess +0.5, kỳ vọng từ các cặp 15.2%, excess so với cặp +0.0)
+    [2 skill] python + sql  72.7% (n=48, kỳ vọng 68.9%, excess +3.9)
+    [2 skill] python + spark  33.3% (n=22, kỳ vọng 33.1%, excess +0.3)
+    [2 skill] sql + spark  28.8% (n=19, kỳ vọng 27.5%, excess +1.2)
+    [2 skill] python + scikit_learn  27.3% (n=18, kỳ vọng 26.2%, excess +1.1)
+    [2 skill] python + tensorflow  21.2% (n=14, kỳ vọng 22.0%, excess -0.8)
+    [2 skill] python + pytorch  21.2% (n=14, kỳ vọng 20.7%, excess +0.6)
+    [2 skill] python + aws  21.2% (n=14, kỳ vọng 19.3%, excess +1.9)
+    [2 skill] python + mlops  19.7% (n=13, kỳ vọng 19.3%, excess +0.4)
+    [2 skill] python + r  19.7% (n=13, kỳ vọng 17.9%, excess +1.8)
+    [2 skill] scikit_learn + tensorflow  19.7% (n=13, kỳ vọng 7.0%, excess +12.7)
+    [ứng viên thay thế] sql + scikit_learn: phi=-0.187, n_both=12, kỳ vọng 14.4 JD
+    [ứng viên thay thế] sql + tensorflow: phi=-0.175, n_both=10, kỳ vọng 12.1 JD
+    [ứng viên thay thế] spark + aws: phi=-0.161, n_both=3, kỳ vọng 5.1 JD
+
+======== AI Engineer: n = 329 JD
+  Tầng core: 2 skill
+    python                      58.7%  (CI95 53.3-63.9%, n=193)
+    llm                         39.2%  (CI95 34.1-44.6%, n=129)
+  Tầng common: 6 skill
+    aws                         17.9%  (CI95 14.2-22.4%, n=59)  [gồm cả JD chỉ ghi: redshift]
+    azure                       17.3%  (CI95 13.6-21.8%, n=57)
+    rest_api                    17.3%  (CI95 13.6-21.8%, n=57)
+    pytorch                     16.7%  (CI95 13.1-21.1%, n=55)
+    ci_cd                       16.4%  (CI95 12.8-20.8%, n=54)  [gồm cả JD chỉ ghi: github_actions, gitlab_ci, jenkins]
+    docker                      16.4%  (CI95 12.8-20.8%, n=54)
+  Tổ hợp (support >= 10%), top 10 mỗi cỡ; excess = support thực tế - kỳ vọng nếu độc lập:
+    [3 skill] python + aws + azure  10.0% (n=33, kỳ vọng 1.8%, excess +8.2, kỳ vọng từ các cặp 10.1%, excess so với cặp -0.1)
+    [2 skill] python + llm  31.0% (n=102, kỳ vọng 23.0%, excess +8.0)
+    [2 skill] python + pytorch  15.8% (n=52, kỳ vọng 9.8%, excess +6.0)
+    [2 skill] python + docker  14.6% (n=48, kỳ vọng 9.6%, excess +5.0)
+    [2 skill] python + aws  13.7% (n=45, kỳ vọng 10.5%, excess +3.2)
+    [2 skill] python + azure  13.7% (n=45, kỳ vọng 10.2%, excess +3.5)
+    [2 skill] python + rest_api  13.7% (n=45, kỳ vọng 10.2%, excess +3.5)
+    [2 skill] aws + azure  12.5% (n=41, kỳ vọng 3.1%, excess +9.4)
+    [2 skill] python + ci_cd  11.9% (n=39, kỳ vọng 9.6%, excess +2.2)
+    [2 skill] llm + azure  11.6% (n=38, kỳ vọng 6.8%, excess +4.8)
+    [2 skill] llm + aws  10.6% (n=35, kỳ vọng 7.0%, excess +3.6)
+
+=== Cặp có P(B|A) >= 99% (n_A >= 20) nhưng KHÔNG thuộc luật roll-up: 2 cặp ===
+  pandas -> python: 100.0% (n_A=34, n_both=34); cần kiểm tra: phụ thuộc thật hay luật ngầm chưa khai báo
+  jetpack_compose -> android: 100.0% (n_A=23, n_both=23); cần kiểm tra: phụ thuộc thật hay luật ngầm chưa khai báo
+
+=== Hạn chế cần ghi trong khóa luận ===
+  - Nguồn tuyển dụng: dữ liệu gộp nhiều nền tảng, mỗi nền tảng gắn tag skill khác nhau và cơ cấu nền tảng cũng khác giữa các vị trí.
+    Core stack vì vậy chịu một phần ảnh hưởng từ phong cách đăng tin của nền tảng; nghiên cứu không tách riêng yếu tố này.
+  - Cỡ mẫu một số vị trí nhỏ (vd. Data Scientist): chỉ mô tả.
+  - 'Cốt lõi' theo tần suất trong JD, không phân biệt bắt buộc và ưu tiên.
+  - Phân nhóm tổ hợp (Core Standard / Advanced / Substitutes) là phân loại thủ công theo kiến thức chuyên ngành.
+  - Skill cha (Spring, CI/CD, GCP...) được tính cả khi JD chỉ ghi skill con theo luật roll-up; các cặp con-cha không được dùng làm bằng chứng đồng xuất hiện.
+  - JD có thể trùng theo công ty, CI có thể hẹp hơn thực tế.
