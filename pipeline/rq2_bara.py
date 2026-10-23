@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 rq2_bara.py  -  Câu hỏi nghiên cứu 2
 
@@ -19,7 +18,7 @@ THUẬT TOÁN
     Bước 5. Mật độ ngoại ngữ theo nhóm nghề:
               mẫu    = tất cả JD của nhóm nghề
               chỉ số = % JD yêu cầu tiếng Anh / Nhật / Pháp và 'bất kỳ ngoại ngữ' (OR ba cột)
-    Bước 6. Ghi rq2_density.xlsx gồm 3 sheet cùng cấu trúc cột: Cloud_DevOps, AI_LLM, Ngoai_ngu.
+    Bước 6. Ghi rq2_density.xlsx gồm 3 sheet: Cloud_DevOps, AI_LLM, Ngoai_ngu.
 
 Chạy: python rq2_bara.py --input jd_skill_binary.csv --taxonomy skill_taxonomy.csv --outdir rq2_out
 """

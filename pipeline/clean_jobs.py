@@ -1,16 +1,15 @@
-#!/usr/bin/env python3
 """
-clean_jobs.py  -  Phase 2: làm sạch jobs_raw (ITviec + LinkedIn + Xóm Jobs + TopCV)
+clean_jobs.py  làm sạch jobs_raw (ITviec + LinkedIn + Xóm Jobs + TopCV)
 
 Chạy:
     python clean_jobs.py --input jobs_raw.xlsx --outdir clean_out --as-of 2026-09-20
 
-Thứ tự xử lý (thứ tự quan trọng, đừng đảo):
+Thứ tự xử lý:
     0. Tạo cột `source` từ source_id, điền job_id trống (đầu vào giả định đã sửa lệch cột Xóm Jobs)
     1. Location -> city (tên thành phố/tỉnh chuẩn; địa chỉ dài thì tìm tên thành phố ở vị trí phải nhất)
     2. Khử trùng lặp theo (title, company, city) đã chuẩn hóa, gộp field thiếu; xuất dedupe_review.csv (cặp nghi trùng)
     3. Parse số năm kinh nghiệm  (experience_raw -> exp_min / exp_max, fallback từ JD text)
-    4. Chuẩn hóa level  (bảng ladder 7 bậc, level range, suy luận từ title / số năm)
+    4. Chuẩn hóa level -> level group (bảng ladder 7 bậc, level range, suy luận từ title / số năm)
     5. Điền exp còn thiếu (cột riêng, có cờ nguồn)  -> xuất jobs_clean.csv + level_map.csv + cleaning_report.txt
 """
 import argparse

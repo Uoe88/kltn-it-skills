@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 rq1_analysis.py  -  Câu hỏi nghiên cứu 1
 
@@ -12,7 +11,7 @@ Bước 3: Phân hai tầng: core khi ≥ 30%, common khi ≥ 15%. Khoảng tin 
 Bước 4: Tổ hợp trong tập core + common:
 - Cặp: Tính P(B|A), P(A|B), Jaccard, phi, tỷ lệ kỳ vọng nếu độc lập, chênh lệch thực tế trừ kỳ vọng. Loại bỏ 1 số cặp con-cha theo luật roll-up (skill_implied_pairs.csv). Gắn nhãn ứng viên: cặp xuất hiện nhiều, cặp có thể thay thế nhau (phi âm).
 - Bộ ba: support và kỳ vọng nếu chỉ có tương tác cặp (IPF).
-- Tiến hành dán nhãn các cặp: cặp xuất hiện nhiều, cặp có thể thay thế nhau (phi âm), bộ ba xuất hiện nhiều, cặp tỷ lệ thấp, hầu như không có ý nghĩa để trống
+- Tiến hành dán nhãn các cặp: cặp xuất hiện nhiều, cặp có thể thay thế nhau (phi âm), bộ ba xuất hiện nhiều, cặp tỷ lệ thấp hầu như không có ý nghĩa để trống
 
 Chạy: python rq1_analysis.py --input jd_skill_binary.csv --outdir rq1_out [--report --extras]
 """
@@ -290,29 +289,7 @@ def assemble_combos(pairs, triples, support_pct, min_abs_phi, top_k):
     return out.reindex(columns=COMBO_COLS).sort_values(["size", "pct"], ascending=[True, False]).reset_index(drop=True)
 
 
-def save_heatmap(cond, names, role, path):
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-    except ImportError:
-        return False
-    m = len(names)
-    fig, ax = plt.subplots(figsize=(0.55 * m + 3, 0.55 * m + 2))
-    im = ax.imshow(cond, vmin=0, vmax=100, cmap="Blues")
-    ax.set_xticks(range(m)); ax.set_xticklabels(names, rotation=70, ha="right", fontsize=8)
-    ax.set_yticks(range(m)); ax.set_yticklabels(names, fontsize=8)
-    if m <= 16:
-        for i in range(m):
-            for j in range(m):
-                ax.text(j, i, f"{cond[i, j]:.0f}", ha="center", va="center",
-                        color="white" if cond[i, j] > 60 else "black", fontsize=7)
-    ax.set_title(f"{role}: P(cột | hàng), %", fontsize=10)
-    fig.colorbar(im, ax=ax, shrink=0.8)
-    fig.tight_layout()
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    return True
+
 
 
 # BƯỚC 5  KIỂM TRA CHẤT LƯỢNG, BÁO CÁO VÀ XUẤT FILE
@@ -450,8 +427,6 @@ def main():
         pairs, cond = pair_table(X, names, role, a.min_pair_n, imp)                              # 4b
         triples = triple_table(X, names, role, a.combo_support, imp)                             # 4c
         all_combos.append(assemble_combos(pairs, triples, a.combo_support, a.min_abs_phi, a.candidates_k))   # 4d + 4e
-        if a.extras and save_heatmap(cond, names, role, out / f"rq1_heatmap_{role.replace(' ', '_')}.png"):
-            heat_saved.append(role)
     combos = pd.concat(all_combos, ignore_index=True) if all_combos else pd.DataFrame(columns=COMBO_COLS)
     print(f"[Bước 4] {len(combos)} dòng tổ hợp" + (f"; bỏ qua (thiếu skill): {', '.join(skipped)}" if skipped else ""))
 
@@ -462,7 +437,7 @@ def main():
     files = ["rq1_core_stack.csv", "rq1_combos.csv"]
     if a.extras:
         hidden.to_csv(out / "rq1_hidden_implied_pairs.csv", index=False, encoding="utf-8-sig")
-        files.append("rq1_hidden_implied_pairs.csv" + (f" + heatmap ({', '.join(heat_saved)})" if heat_saved else ""))
+        files.append("rq1_hidden_implied_pairs.csv")
     if a.report:
         ctx = {"a": a, "roles": roles, "tax": tax, "combos": combos, "hidden": hidden, "domain_cols": domain_cols,
                "n_noise": n_noise, "n_implied": len(implied), "implied_src": implied_src}

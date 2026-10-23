@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 build_skill_taxonomy.py  -  taxonomy kỹ năng, bảng ánh xạ biến thể và ma trận binary skill
 
@@ -12,7 +12,7 @@ THUẬT TOÁN
   4. Với mỗi hard skill tính số job, % trên tổng và theo từng nhóm nghề:
          prevalence = % job của nhóm có skill
          lift       = prevalence trong nhóm / prevalence ở các nhóm còn lại
-  5. Skill vào ma trận binary nếu thỏa MỘT trong các quy tắc:
+  5. Skill vào ma trận binary nếu thỏa mãn MỘT trong các quy tắc:
          (a) global        : số job >= --min-jobs (mặc định 50)
          (b) role_core     : ở một nhóm nghề có prevalence >= --role-min-pct (8%), >= --role-min-jobs (10) job
                              và lift >= --role-min-lift (1,5)
@@ -21,6 +21,7 @@ THUẬT TOÁN
   6. Gộp CISSP / CEH / OSCP / CISM thành cột skill_cert_security, ghép metadata và ghi jd_skill_binary.csv
      cùng taxonomy, alias map, unmapped, role stats, implied pairs, report.
 """
+# Khai báo thư viện
 import argparse
 import re
 import unicodedata
@@ -31,7 +32,7 @@ import numpy as np
 import pandas as pd
 
 
-DEFAULT_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer"]
+# DEFAULT_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer", "DevOps/SRE", "Mobile", "QA/Tester", "BA/PM", "Security", "Cloud"]
 LANGUAGES = ["English", "Japanese", "French"]
 CERT_GROUP = {"skill_cert_security": ["CISSP", "CEH", "OSCP", "CISM"]}
 
@@ -41,13 +42,14 @@ META_COLS = ["job_uid", "source", "job_title", "company_name", "city", "expertis
              "salary_raw", "job_url", "crawled_at"]
 OUT_NAME = "jd_skill_binary.csv"
 
-
+# Chuẩn hóa chuỗi (bỏ dấu, chữ thường, bỏ ký tự không phải chữ/số/+/#)
 def key(s: str) -> str:
     s = str(s).replace("đ", "d").replace("Đ", "D")
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9+#]", "", s)
 
-
+# Khai báo taxonomy, alias, meta, các skill nhóm mềm, skill ngoại ngữ, skill chứng chỉ, skill lập trình
+# Cấu trúc TAXONOMY = {("Group", "Subgroup"): {"Canonical": ["alias1", "alias2"]}}
 TAXONOMY = {
     ("Programming Language", "Language"): {
         "Python": [], "Java": [], "JavaScript": ["js", "es6", "ecmascript"], "TypeScript": ["ts"],
@@ -205,7 +207,7 @@ TAXONOMY = {
         "Stakeholder Management": ["stakeholder", "stakeholders"],
     },
 }
-
+# Khai báo quy tắc bổ trợ (multi-canonical, parent, noise)
 MULTI = {
     "eks": ["Kubernetes", "AWS"], "ecs": ["AWS", "Docker"], "embedded c": ["C", "Embedded"],
     "gitlab ci": ["GitLab CI", "CI/CD"], "github actions": ["GitHub Actions", "CI/CD"], "jenkins": ["Jenkins", "CI/CD"],
@@ -227,7 +229,7 @@ DROP_TAGS = {key("Fresher Accepted"), key("Internship Accepted")}
 NOISE_PREFIX = ("and ",)
 NOISE_RE = re.compile(r"information technology|general business|business development|education and training|finance and sales|^apache$|^data-driven$", re.I)
 
-
+# Lấy skill nhóm mềm từ văn bản JD (title + requirements + description) bằng regex
 SOFT_TEXT = {
     "English": r"\b(english|tieng anh|ielts|toeic|toefl)\b",
     "Japanese": r"\b(japanese|tieng nhat|jlpt)\b|日本語",
@@ -246,13 +248,12 @@ SOFT_TEXT = {
 }
 SOFT_RX = {c: re.compile(p, re.I) for c, p in SOFT_TEXT.items()}
 
-
 def soft_from_text(text):
     t = re.sub(r"\s+", " ", unicodedata.normalize("NFKD", text.replace("đ", "d").replace("Đ", "D")).encode("ascii", "ignore").decode()
                if not re.search("日本語", text) else text)
     return {c for c, rx in SOFT_RX.items() if rx.search(t)}
 
-
+# Xây dựng alias cho các skill
 def build_alias():
     alias, meta = {}, {}
     for (group, sub), skills in TAXONOMY.items():
@@ -273,7 +274,7 @@ def slug(canon, prefix):
     s = canon.lower().replace("c++", "cpp").replace("c#", "csharp").replace(".net", "dotnet")
     return prefix + re.sub(r"[^a-z0-9]+", "_", s).strip("_")
 
-
+# Nhận tham số và kiểm tra dữ liệu đầu vào và xuất kết quả
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", default="jobs_clean.csv")
@@ -298,7 +299,7 @@ def main():
         if a.roles == "ALL" else [r.strip() for r in a.roles.split(",") if r.strip()]
     alias, meta = build_alias()
     assert all(c in meta for c in SOFT_TEXT), "SOFT_TEXT có canonical lạ"
-
+    # ---Ánh xạ token cho từng JD---
     var_cnt = Counter()
     unmapped = Counter()
     job_skills = {}
@@ -395,7 +396,7 @@ def main():
     um = pd.DataFrame(unmapped.most_common(), columns=["token", "n"])
     um.to_csv(out / "skill_unmapped.csv", index=False, encoding="utf-8-sig")
 
-    # ---- binary: metadata + skill, gộp thành 1 file duy nhất ----
+    # ---- binary ----
     sel = tax[tax.in_binary]
     cert_members = [c for c in CERT_GROUP["skill_cert_security"] if c in meta]
     hard_cols = {}

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 rq3_analysis.py  -  Câu hỏi nghiên cứu 3
 

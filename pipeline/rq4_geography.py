@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 rq4_geography.py  -  Câu hỏi nghiên cứu 4
 
@@ -6,7 +5,7 @@ rq4_geography.py  -  Câu hỏi nghiên cứu 4
 
 THUẬT TOÁN
   1. Loại job thiếu level hoặc thiếu city, và job có city không phải thành phố (NON_CITY_LABELS: Không rõ, Remote).
-  2. Senior+ = Senior + Lead/Principal + Manager+. Với mỗi thành phố đếm job từng bậc và Senior+.
+  2. Senior+ = Senior +  Lead+ (tương ứng với (Senior + Lead/Principal + Manager+, tức level_group = Senior hoặc Lead+). Với mỗi thành phố đếm job từng bậc và Senior+.
   3. Hai cách đọc "tập trung":
          (a) Tỉ lệ số jobs senior+ của mỗi thành phố so với tổng senior+ của các thành phố
          (b) Tỉ lệ số jobs senior+ của mỗi thành phố so với tổng số jobs của thành phố đó
@@ -21,7 +20,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+# Dùng cột level_group: Senior = Senior; Lead+ (Lead/Principal + Manager+ (đã gộp sẵn khi làm sạch dữ liệu))
 LEVELS_OF_INTEREST = ["Senior", "Lead+"]
+# Viết thường hết vì phía so sánh (dòng lọc bên dưới) đã đổi city sang chữ thường
 NON_CITY_LABELS = {"không rõ", "remote"}
 
 
@@ -46,10 +47,10 @@ def main():
 
     df = pd.read_excel(a.input) if a.input.endswith((".xlsx", ".xls")) else pd.read_csv(a.input)
     is_non_city = df.city.astype(str).str.strip().str.lower().isin(NON_CITY_LABELS)
-    known = df[df.level_primary_label.notna() & df.city.notna() & ~is_non_city].copy()
+    known = df[df.level_group.notna() & df.city.notna() & ~is_non_city].copy()
     n_excluded = len(df) - len(known)
     n_non_city = int(is_non_city.sum())
-    is_senior_plus = known.level_primary_label.isin(LEVELS_OF_INTEREST)
+    is_senior_plus = known.level_group.isin(LEVELS_OF_INTEREST)
     total_senior_plus = int(is_senior_plus.sum())
 
     city_n = known.groupby("city").size().rename("n_jobs_city_total")
@@ -57,10 +58,10 @@ def main():
     for city, g in known.groupby("city"):
         n_city = len(g)
         for level in LEVELS_OF_INTEREST + ["Senior+ (gộp 2 bậc trên)"]:
-            k = int((g.level_primary_label == level).sum()) if level != "Senior+ (gộp 3 bậc trên)" \
-                else int(g.level_primary_label.isin(LEVELS_OF_INTEREST).sum())
+            k = int((g.level_group == level).sum()) if level != "Senior+ (gộp 2 bậc trên)" \
+                else int(g.level_group.isin(LEVELS_OF_INTEREST).sum())
             pct_city = 100 * k / n_city if n_city else np.nan
-            pct_of_all_senior = 100 * k / total_senior_plus if level == "Senior+ (gộp 3 bậc trên)" and total_senior_plus else np.nan
+            pct_of_all_senior = 100 * k / total_senior_plus if level == "Senior+ (gộp 2 bậc trên)" and total_senior_plus else np.nan
             lo, hi = wilson_ci(k, n_city)
             rows.append({"city": city, "level": level, "n_jobs_in_level": k, "n_jobs_city_total": n_city,
                          "pct_of_city_jobs": round(pct_city, 1), "ci_low_pct": round(100 * lo, 1), "ci_high_pct": round(100 * hi, 1),
@@ -70,12 +71,12 @@ def main():
     table.to_csv(out / "rq4_city_level.csv", index=False, encoding="utf-8-sig")
 
     rep = [f"Job có cả city và level xác định: {len(known)}/{len(df)} ({n_excluded} job bị loại vì thiếu city hoặc level)",
-           f"Tổng job Senior+ (Senior + Lead/Principal + Manager+): {total_senior_plus}",
+           f"Tổng job Senior+ (Senior + Lead/Principal + Manager+, tức level_group = Senior hoặc Lead+): {total_senior_plus}",
            f"Ngưỡng cỡ mẫu thành phố: >= {a.min_n} job (đã biết level) mới vào bảng xếp hạng chính",
            f"(Đã loại {n_non_city} job có city là 'Không rõ' hoặc 'Remote' khỏi mọi bảng: đây không phải thành phố thật)\n"]
 
-    main_table = table[(table.level == "Senior+ (gộp 3 bậc trên)") & table.city_sample_reliable]
-    small_cities = table[(table.level == "Senior+ (gộp 3 bậc trên)") & ~table.city_sample_reliable].sort_values("n_jobs_city_total", ascending=False)
+    main_table = table[(table.level == "Senior+ (gộp 2 bậc trên)") & table.city_sample_reliable]
+    small_cities = table[(table.level == "Senior+ (gộp 2 bậc trên)") & ~table.city_sample_reliable].sort_values("n_jobs_city_total", ascending=False)
 
     rep.append("=== (a) TUYỆT ĐỐI -- thành phố có NHIỀU job Senior+ nhất (số lượng thô) ===")
     top_abs = main_table.sort_values("n_jobs_in_level", ascending=False).head(a.top_n)
@@ -89,8 +90,8 @@ def main():
         rep.append(f"  {r.city:<16} {r.pct_of_city_jobs:>5.1f}% job là Senior+  "
                    f"(CI95 {r.ci_low_pct:.1f}-{r.ci_high_pct:.1f}%, n={r.n_jobs_city_total} job tại thành phố này)")
 
-    rep.append("\n=== Phân theo từng bậc (Senior / Lead-Principal / Manager+), chỉ thành phố đủ mẫu ===")
-    piv = table[table.city.isin(main_table.city) & (table.level != "Senior+ (gộp 3 bậc trên)")]
+    rep.append("\n=== Phân theo từng bậc (Senior / Lead+), chỉ thành phố đủ mẫu ===")
+    piv = table[table.city.isin(main_table.city) & (table.level != "Senior+ (gộp 2 bậc trên)")]
     piv_pct = piv.pivot(index="city", columns="level", values="pct_of_city_jobs")
     piv_n = piv.pivot(index="city", columns="level", values="n_jobs_in_level")
     piv_pct.insert(0, "n_jobs_city_total", city_n.reindex(piv_pct.index))
