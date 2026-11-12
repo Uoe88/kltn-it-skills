@@ -1,4 +1,3 @@
-
 """
 build_skill_taxonomy.py  -  taxonomy kỹ năng, bảng ánh xạ biến thể và ma trận binary skill
 
@@ -38,8 +37,8 @@ CERT_GROUP = {"skill_cert_security": ["CISSP", "CEH", "OSCP", "CISM"]}
 
 
 META_COLS = ["job_uid", "source", "job_title", "company_name", "city", "expertise_category",
-             "level_primary_label", "level_group", "exp_min", "exp_max", "exp_source",
-             "salary_raw", "job_url", "crawled_at"]
+             "level_group", "exp_min", "exp_max", "exp_group",
+             "job_url", "crawled_at"]
 OUT_NAME = "jd_skill_binary.csv"
 
 # Chuẩn hóa chuỗi (bỏ dấu, chữ thường, bỏ ký tự không phải chữ/số/+/#)
@@ -386,7 +385,7 @@ def main():
                      "in_binary": bool(reason), "binary_reason": reason, "aliases": "; ".join(m["aliases"])})
     tax = pd.DataFrame(rows).sort_values(["type", "n_jobs"], ascending=[True, False])
     tax.to_csv(out / "skill_taxonomy.csv", index=False, encoding="utf-8-sig")
-    pd.DataFrame(role_rows).to_csv(out / "skill_role_stats.csv", index=False, encoding="utf-8-sig")
+    
 
     # ---- alias map ----
     am = pd.DataFrame([{"raw_variant": r, "canonical": c, "n_occurrences": n,
