@@ -106,9 +106,7 @@ OTHER_PROVINCES = [
     "Quảng Ninh", "Quảng Trị", "Sóc Trăng", "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Tiền Giang",
     "Trà Vinh", "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái",
 ]
-OVERSEAS = "Nước ngoài"
-OVERSEAS_RE = re.compile(r"\b(overseas|france|paris|singapore|usa|united states|japan|tokyo|germany|australia|"
-                         r"thailand|malaysia|philippines|korea|india|canada|uk)\b")
+
 
 # Trích xuất và chuẩn hóa tên tỉnh, thành phố từ thông tin địa điểm hoặc tiêu đề công việc.
 def _city_regexes():
@@ -130,20 +128,22 @@ TITLE_CITY_TAGS = [
 # Kiểm tra giá trị có bị thiếu hoặc rỗng hay không.
 def parse_city(loc, title):
     """
-    Tìm tên thành phố/tỉnh trong toàn bộ chuỗi location, chọn cái xuất hiện Ở VỊ TRÍ PHẢI NHẤT và dán nhãn
+    Tìm tỉnh/thành phố Việt Nam trong location.
+    Nếu không tìm thấy địa danh thuộc danh sách Việt Nam
+    thì thử tìm tag trong title, nếu vẫn không có thì trả về 'Không rõ'.
     """
     if pd.notna(loc) and str(loc).strip():
         t = plain(loc)
         best, best_end = None, -1
+
         for label, rx in CITY_RX.items():
             for m in rx.finditer(t):
-                if m.end() > best_end:        # lấy match nằm phải nhất (thành phố thường ở cuối địa chỉ)
+                if m.end() > best_end:
                     best, best_end = label, m.end()
         if best:
             return best, "location"
-        if OVERSEAS_RE.search(t):
-            return OVERSEAS, "location"
-    # không thấy tên thành phố (vd chỉ 'Vietnam') -> thử tag trong title: [HN], (HCM), 'Tại Hà Nội'
+
+    # Không tìm thấy trong location -> thử tag trong title
     tt = plain(title)
     for city, pat in TITLE_CITY_TAGS:
         if re.search(pat, tt):
@@ -373,7 +373,7 @@ def add_level(df):
 # --------------------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--input", default=r"D:\KLTN\kltn-it-skills\data_private\jobs_raw_new.xlsx")
+    ap.add_argument("--input", default=r"D:\KLTN\kltn-it-skills\data_private\jobs_raw.xlsx")
     ap.add_argument("--outdir", default=None)
     ap.add_argument("--as-of", default=None, help="ngày 'hôm nay' để cờ crawled_at bất thường (YYYY-MM-DD)")
     a = ap.parse_args()

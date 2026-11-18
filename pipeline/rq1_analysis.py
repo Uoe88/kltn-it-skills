@@ -10,11 +10,12 @@ Bước 2: Tỷ lệ của skill trong vị trí = % số JD có skill / số JD
 Bước 3: Phân hai tầng: core khi ≥ 30%, common khi ≥ 15%. Khoảng tin cậy Wilson 95% chỉ báo kèm, không dùng để loại skill.
 Bước 4: Tổ hợp trong tập core + common:
 - Cặp: Tính P(B|A), P(A|B), Jaccard, phi, tỷ lệ kỳ vọng nếu độc lập, chênh lệch thực tế trừ kỳ vọng. Loại bỏ 1 số cặp con-cha theo luật roll-up (skill_implied_pairs.csv). Gắn nhãn ứng viên: cặp xuất hiện nhiều, cặp có thể thay thế nhau (phi âm).
-- Bộ ba: support và kỳ vọng nếu chỉ có tương tác cặp (IPF).
+- Bộ ba: support và kỳ vọng nếu chỉ có tương tác cặp.
 - Tiến hành dán nhãn các cặp: cặp xuất hiện nhiều, cặp có thể thay thế nhau (phi âm), bộ ba xuất hiện nhiều, cặp tỷ lệ thấp hầu như không có ý nghĩa để trống
 
 Chạy: python rq1_analysis.py --input jd_skill_binary.csv --outdir rq1_out [--report --extras]
 """
+# Khai báo các thư viện
 import argparse
 import re
 import warnings
@@ -23,8 +24,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
-# <<<SHARED-START (khối dùng chung RQ1/RQ3, phải giống hệt ở hai file)
+# Khai báo nhóm nghề, các kĩ năng liên quan
 TARGET_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer"]
 LANGUAGE_SKILL_COLS = {"skill_english", "skill_japanese", "skill_french"}
 
@@ -39,7 +39,7 @@ DEFAULT_IMPLIED = [
     ("skill_azure_synapse", "skill_data_warehouse"), ("skill_vertex_ai", "skill_gcp"), ("skill_sagemaker", "skill_aws"),
 ]
 
-
+# Hàm tính khoảng tin cây Wilson 95% cho tỷ lệ k/n (trả về tỷ lệ 0-1)
 def wilson_ci(k, n, z=1.96):
     """Khoảng tin cậy Wilson 95% cho tỷ lệ k/n (trả về tỷ lệ 0-1)."""
     if n == 0:
@@ -50,11 +50,11 @@ def wilson_ci(k, n, z=1.96):
     half = (z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))) / denom
     return max(0.0, center - half), min(1.0, center + half)
 
-
+# Hàm tìm phân vị 25/75 cho boxplot (trả về float, np.nan nếu dãy rỗng). 
 def q(x, p):
     return float(np.percentile(x, p)) if len(x) else np.nan
 
-
+# Các hàm chuẩn hóa tên cột skill (nếu chưa đúng dạng Skill_)
 def norm_skill(name):
     name = name.strip()
     return name if name.startswith("skill_") else f"skill_{name}"
@@ -71,7 +71,7 @@ def parse_domain_cols(text):
 def slug_skill(name):
     return "skill_" + re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
 
-
+# Đọc taxonomy để ánh xạ kỹ năng vào nhóm
 def load_group_map(taxonomy_path):
     """skill_<slug> -> group (từ skill_taxonomy.csv). Trả về {} nếu không có file."""
     if not taxonomy_path or not Path(taxonomy_path).exists():
@@ -131,7 +131,7 @@ def resolve_implied(arg, input_path, df, skill_cols):
     pairs = [(c, p) for c, p in pairs if c in cols and p in cols]
     return pairs, source
 
-
+# Loại trùng lặp cha-con: n_hard_skills_dedup = n_hard_skills - số họ cha-con bị đếm trùng (cha chỉ trừ khi có >= 1 con cùng xuất hiện).
 def add_dedup(df, implied):
     """n_hard_skills_dedup = n_hard_skills - số họ cha-con bị đếm trùng (cha chỉ trừ khi có >= 1 con cùng xuất hiện)."""
     by_parent = {}
@@ -144,7 +144,7 @@ def add_dedup(df, implied):
     df["n_hard_skills_dedup"] = (df["n_hard_skills"] - red).clip(lower=0)
     return df
 
-
+# Lọc JD hợp lệ
 def filter_jobs(df, roles):
     """has_skills == 1 và (nếu có cột skills_status) chỉ giữ 'has_hard': loại JD chỉ có noise, vì chúng"""
     g = df[df.expertise_category.isin(roles) & (df.has_skills == 1)]
@@ -183,7 +183,7 @@ def core_stack_table(g, skill_cols, roles, core_thr, common_thr, small_n, childr
                          "ci_low_pct": round(100 * lo, 1), "ci_high_pct": round(100 * hi, 1),
                          "tier": tier, "is_concept": col in CONCEPT_COLS,
                          "implied_children": ", ".join(children_of.get(col, [])),
-                         "role_n_below_small_n": n < small_n})
+                        })
     out = pd.DataFrame(rows)
     order = {r: i for i, r in enumerate(roles)}
     out["_o"] = out.role.map(order)
@@ -287,9 +287,6 @@ def assemble_combos(pairs, triples, support_pct, min_abs_phi, top_k):
     out["nhom_thu_cong"] = ""
     out["ghi_chu"] = ""
     return out.reindex(columns=COMBO_COLS).sort_values(["size", "pct"], ascending=[True, False]).reset_index(drop=True)
-
-
-
 
 
 # BƯỚC 5  KIỂM TRA CHẤT LƯỢNG, BÁO CÁO VÀ XUẤT FILE

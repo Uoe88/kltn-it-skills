@@ -15,8 +15,9 @@ Bước 6: Skill hiếm của nghề: số skill hiếm, số skill hiếm lộ 
 Bước 7: Skill theo level: so nhóm thấp (Entry + Middle) với nhóm cao (Senior + Lead+) bằng chênh điểm phần trăm và kiểm định Fisher (Holm trong nghề); cờ only_high đánh dấu skill chỉ có ở nhóm cao, so với đường cơ sở hoán vị nhãn level. 
 BƯỚC 8: Output rq3_by_level.csv, rq3_rare_skills.csv, rq3_level_skills.csv. 
 
-Chạy: python rq3_analysis.py --input jd_skill_binary.csv --outdir rq3_out [--taxonomy skill_taxonomy.csv --hard-skills hard_skills.csv --report]
+Chạy: python pipeline/rq3_analysis.py --input data_private/jd_skill_binary.csv --outdir rq3_out --taxonomy data_private/skill_taxonomy.csv 
 """
+# Khai báo thư viện
 import argparse
 import re
 import warnings
@@ -26,11 +27,11 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-# <<<SHARED-START (khối dùng chung RQ1/RQ3, phải giống hệt ở hai file)
+# Khai báo nhóm nghề và kỹ năng
 TARGET_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer"]
 LANGUAGE_SKILL_COLS = {"skill_english", "skill_japanese", "skill_french"}
 
-DEFAULT_DOMAIN_COLS = "artificial_intelligence,machine_learning,deep_learning,nlp,computer_vision"
+DEFAULT_DOMAIN_COLS = "artificial_intelligence,machine_learning,deep_learning,nlp,computer_vision" #cần loại bỏ khỏi hard skill nếu có
 
 DEFAULT_IMPLIED = [
     ("skill_spring_boot", "skill_spring"), ("skill_jenkins", "skill_ci_cd"), ("skill_github_actions", "skill_ci_cd"),
@@ -41,7 +42,7 @@ DEFAULT_IMPLIED = [
     ("skill_azure_synapse", "skill_data_warehouse"), ("skill_vertex_ai", "skill_gcp"), ("skill_sagemaker", "skill_aws"),
 ]
 
-
+# Hàm tính khoảng tin cậy Wilson 95% cho tỷ lệ k/n (trả về 0<tỷ lệ<1)
 def wilson_ci(k, n, z=1.96):
     """Khoảng tin cậy Wilson 95% cho tỷ lệ k/n (trả về tỷ lệ 0-1)."""
     if n == 0:
@@ -52,28 +53,27 @@ def wilson_ci(k, n, z=1.96):
     half = (z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))) / denom
     return max(0.0, center - half), min(1.0, center + half)
 
-
+# Hàm tìm phân vị 25/75 cho boxplot (trả về float, np.nan nếu dãy rỗng).
 def q(x, p):
     return float(np.percentile(x, p)) if len(x) else np.nan
 
-
+# Hàm chuẩn hóa tên cột skill (nếu chưa đúng dạng Skill_)
 def norm_skill(name):
     name = name.strip()
     return name if name.startswith("skill_") else f"skill_{name}"
-
-
+# Loại bỏ tiền tố skill_ để hiển thị trong bảng
 def short(col):
     return col.replace("skill_", "")
 
-
+# Hàm tách cột nhãn lĩnh vực từ chuỗi, chuẩn hóa tên cột skill (xóa khoảng trắng)
 def parse_domain_cols(text):
     return [norm_skill(c) for c in text.split(",") if c.strip()]
 
-
+# Hàm tạo slug cho skill (dùng để ánh xạ vào nhóm)
 def slug_skill(name):
     return "skill_" + re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
 
-
+# Hàm sử dụng taxonomy để ánh xạ kỹ năng vào nhóm
 def load_group_map(taxonomy_path):
     """skill_<slug> -> group (từ skill_taxonomy.csv). Trả về {} nếu không có file."""
     if not taxonomy_path or not Path(taxonomy_path).exists():
@@ -83,42 +83,42 @@ def load_group_map(taxonomy_path):
         return {}
     return {slug_skill(c): g for c, g in zip(t.canonical, t.group)}
 
-
+# Hàm đọc dữ liệu, chọn cột công nghệ, xây dựng độ rộng cho các ngành.
 def load_data(path, domain_cols, group_map=None):
     """Đọc file, chọn cột công nghệ, điều chỉnh độ rộng cho nhãn lĩnh vực."""
     df = pd.read_excel(path) if path.endswith((".xlsx", ".xls")) else pd.read_csv(path)
-    df = df.copy()
-    skill_all = [c for c in df.columns if c.startswith("skill_") and c not in LANGUAGE_SKILL_COLS]
-    unknown = [c for c in domain_cols if c not in skill_all]
+    df = df.copy() # tạo bản sao để không biến đổi dữ lệu nếu truyền hàm
+    skill_all = [c for c in df.columns if c.startswith("skill_") and c not in LANGUAGE_SKILL_COLS] # hard skill (có trong taxonomy), không tính ngoại ngữ
+    unknown = [c for c in domain_cols if c not in skill_all] # skill domain không có trong cột skill_ hoặc là ngoại ngữ (k có trong taxonomy)
     if unknown:
         raise SystemExit(f"--domain-cols có cột không tồn tại (hoặc là ngoại ngữ): {unknown}")
-    skill_cols = [c for c in skill_all if c not in domain_cols]
-    df[skill_all] = df[skill_all].fillna(0).astype(int)
-    df["has_skills"] = df["has_skills"].fillna(0).astype(int)
-
-    df["n_hard_skills_file"] = df["n_hard_skills"]
-    n_dom = df[domain_cols].sum(axis=1) if domain_cols else 0
-    df["n_hard_skills"] = (df["n_hard_skills_file"] - n_dom).clip(lower=0)
-    df["n_hard_skills_in_cols"] = df[skill_cols].sum(axis=1)
-
-    df["n_skill_groups_file"] = df["n_skill_groups"]
+    skill_cols = [c for c in skill_all if c not in domain_cols] # skill_ dùng để tính độ rộng (loại bỏ nhãn lĩnh vực) 
+    df[skill_all] = df[skill_all].fillna(0).astype(int) # chuyển NaN sang 0, kiểu int
+    df["has_skills"] = df["has_skills"].fillna(0).astype(int) 
+    df["n_hard_skills_file"] = df["n_hard_skills"] # số hard skill ban đầu (chưa trừ nhãn lĩnh vực, chưa trừ cha-con)
+    n_dom = df[domain_cols].sum(axis=1) if domain_cols else 0 # số nhãn lĩnh vực
+    df["n_hard_skills"] = (df["n_hard_skills_file"] - n_dom).clip(lower=0) # số hard skill đã trừ nhãn lĩnh vực
+    df["n_hard_skills_in_cols"] = df[skill_cols].sum(axis=1) # số hard skill trong cột skill_ (đã trừ nhãn lĩnh vực, chưa trừ cha-con)
+    df["n_skill_groups_file"] = df["n_skill_groups"] # số nhóm kỹ năng ban đầu (chưa trừ nhãn lĩnh vực, chưa trừ cha-con)
     df["groups_adjusted"] = False
+
+    # Bỏ nhãn lĩnh vực khỏi số nhóm kỹ năng (nếu có taxonomy)
     if domain_cols and group_map:
-        drop_groups = {group_map[c] for c in domain_cols if c in group_map}
-        lost = pd.Series(0, index=df.index)
+        drop_groups = {group_map[c] for c in domain_cols if c in group_map} # nhóm lĩnh vực cần loại khỏi số nhóm kỹ năng
+        lost = pd.Series(0, index=df.index) # số nhóm kỹ năng bị mất do bỏ nhãn lĩnh vực
         for grp in drop_groups:
-            dom_in = [c for c in domain_cols if group_map.get(c) == grp]
-            others = [c for c in skill_cols if group_map.get(c) == grp]
-            has_dom = df[dom_in].sum(axis=1) > 0
+            dom_in = [c for c in domain_cols if group_map.get(c) == grp] # cột nhãn lĩnh vực thuộc nhóm grp
+            others = [c for c in skill_cols if group_map.get(c) == grp] # cột skill_ thuộc nhóm grp
+            has_dom = df[dom_in].sum(axis=1) > 0 # có nhãn lĩnh vực thuộc nhóm grp 
             has_other = df[others].sum(axis=1) > 0 if others else pd.Series(False, index=df.index)
-            lost += (has_dom & ~has_other).astype(int)
+            lost += (has_dom & ~has_other).astype(int) # chỉ trừ nhóm nếu có nhãn lĩnh vực nhưng không có skill_ cùng nhóm
         df["n_skill_groups"] = (df["n_skill_groups_file"] - lost).clip(lower=0)
         df["groups_adjusted"] = lost > 0
     return df, skill_cols
 
-
+# Loại cha-con: n_hard_skills_dedup = n_hard_skills - số họ cha-con bị đếm trùng (cha chỉ trừ khi có >= 1 con cùng xuất hiện).
 def resolve_implied(arg, input_path, df, skill_cols):
-    """Lấy danh sách (con, cha) của luật roll-up. Ưu tiên skill_implied_pairs.csv (build_skill_taxonomy.py xuất);"""
+    """Lấy danh sách (con, cha) của luật roll-up. (skill_implied_pairs.csv);"""
     path = Path(arg) if arg else Path(input_path).parent / "skill_implied_pairs.csv"
     cols = set(skill_cols)
     if path.exists():
@@ -133,7 +133,7 @@ def resolve_implied(arg, input_path, df, skill_cols):
     pairs = [(c, p) for c, p in pairs if c in cols and p in cols]
     return pairs, source
 
-
+# Xóa trùng cha-con
 def add_dedup(df, implied):
     """n_hard_skills_dedup = n_hard_skills - số họ cha-con bị đếm trùng (cha chỉ trừ khi có >= 1 con cùng xuất hiện)."""
     by_parent = {}
@@ -146,7 +146,7 @@ def add_dedup(df, implied):
     df["n_hard_skills_dedup"] = (df["n_hard_skills"] - red).clip(lower=0)
     return df
 
-
+# Giữ các JD có kĩ năng cứng (has_skills == 1 và (skills_status ='has_hard'))
 def filter_jobs(df, roles):
     """has_skills == 1 và (nếu có cột skills_status) chỉ giữ 'has_hard': loại JD chỉ có noise, vì chúng"""
     g = df[df.expertise_category.isin(roles) & (df.has_skills == 1)]
@@ -155,32 +155,31 @@ def filter_jobs(df, roles):
         n_noise = int((g.skills_status != "has_hard").sum())
         g = g[g.skills_status == "has_hard"]
     return g.copy(), n_noise
-# >>>SHARED-END
 
 warnings.simplefilter("ignore", pd.errors.PerformanceWarning)
 warnings.simplefilter("ignore", stats.ConstantInputWarning) if hasattr(stats, "ConstantInputWarning") else None
-
+# Khởi tạo levels, thứ tự level, nhóm thấp/cao, nhãn ALL
 LEVELS = ["Entry", "Middle", "Senior", "Lead+"]
 LEVEL_ORD = {lv: i for i, lv in enumerate(LEVELS)}
 LOW_LEVELS = ("Entry", "Middle")
 HIGH_LEVELS = ("Senior", "Lead+")
 ALL = "TẤT CẢ"
 
-# Tiêu chí: hạ tầng / điều phối, xử lý phân tán và streaming, thiết kế hệ thống, MLOps/RAG; thường kỳ vọng ở kinh nghiệm cao.
+# Khởi tạo danh sách kỹ năng khó mặc định (hard skill) 
 DEFAULT_HARD_SKILLS = [
     "kubernetes", "helm", "argocd", "terraform", "ansible",
     "kafka", "flink", "spark", "hadoop", "scala", "airflow", "dbt", "databricks",
     "microservices", "event_driven", "software_architecture", "mlops", "rag",
 ]
-
+# Khai báo các chỉ số cần tính trong phân tích
 METRICS = [("n_hard_skills_dedup", False),
-           ("n_hard_skills", False),
-           ("n_skill_groups", False),
-           ("n_rare_skills", False), ("has_rare_skill", True),
-           ("n_hard_manual", False), ("has_hard_manual", True),
-           ("n_tail_skills", False)]
+           ("n_hard_skills", False), # Số kỹ năng (hard skill) đã trừ nhãn lĩnh vực, chưa trừ cha-con
+           ("n_skill_groups", False), # Số nhóm kỹ năng
+           ("n_rare_skills", False), ("has_rare_skill", True), #kĩ năng hiếm theo tỷ lệ
+           ("n_hard_manual", False), ("has_hard_manual", True), #kĩ năng xác định thủ công
+           ("n_tail_skills", False)] # kĩ năng nhưng không có trong cột hard skill (có thể là hiếm hoặc không hiếm)
 
-
+# Hàm hiệu chỉnh Holm cho p-value (trả về mảng p-value đã hiệu chỉnh, cùng thứ tự với đầu vào)
 def holm(p):
     p = np.asarray(p, float)
     m = len(p)
@@ -191,7 +190,7 @@ def holm(p):
     return out
 
 
-# BƯỚC 1  DANH SÁCH KỸ NĂNG KHÓ (THỦ CÔNG)
+# DANH SÁCH KỸ NĂNG KHÓ MẶC ĐỊNH
 def resolve_hard_skills(arg, skill_cols):
     """Trả về (cột dùng được, tên không có cột, mô tả nguồn)."""
     cols = set(skill_cols)
@@ -200,11 +199,11 @@ def resolve_hard_skills(arg, skill_cols):
         names = t["skill"] if "skill" in t.columns else t.iloc[:, 0]
         wanted, source = [norm_skill(str(s)) for s in names], str(arg)
     else:
-        wanted, source = [norm_skill(s) for s in DEFAULT_HARD_SKILLS], "đề xuất khởi đầu trong code (cần bạn duyệt)"
+        wanted, source = [norm_skill(s) for s in DEFAULT_HARD_SKILLS], "đề xuất khởi đầu trong code"
     return [c for c in wanted if c in cols], [short(c) for c in wanted if c not in cols], source
 
 
-# BƯỚC 3  "HIẾM THEO NGHỀ" VÀ ĐẶC TRƯNG TỪNG JD
+# BƯỚC 3  "HIẾM THEO NGHỀ" VÀ ĐẶC TRƯNG TỪNG JD ()
 def define_rare(g, skill_cols, roles, rare_pct):
     """Skill hiếm của nghề: 0 < tần suất trong nghề < rare_pct %. Tính trên mọi JD của nghề (mọi level)."""
     out = {}
@@ -261,7 +260,7 @@ def trend_table(g_lv, roles, n_boot, seed, min_n=20):
 
 
 # BƯỚC 5  BẢNG NGHỀ x LEVEL
-BY_LEVEL_COLS = ["role", "level", "metric", "n_jobs", "cell_n_small", "exp_min_mean", "n_with_exp",
+BY_LEVEL_COLS = ["role", "level", "metric", "n_jobs", "cell_n_small", 
                  "mean", "median", "q1", "q3", "ci_low", "ci_high",
                  "trend_n", "trend_rho", "trend_ci_low", "trend_ci_high", "trend_p_holm"]
 
@@ -275,11 +274,11 @@ def by_level_table(g_lv, roles, trend, min_cell):
             c = gr if level == ALL else gr[gr.level_group == level]
             if c.empty:
                 continue
-            exp = c.exp_min.dropna()
+            exp = c.exp_group.dropna()
             for metric, is_bin in METRICS:
                 x = c[metric]
                 row = {"role": role, "level": level, "metric": metric, "n_jobs": len(c), "cell_n_small": len(c) < min_cell,
-                       "exp_min_mean": round(exp.mean(), 2) if len(exp) else np.nan, "n_with_exp": len(exp),
+                        
                        "mean": round(x.mean(), 3), "median": np.nan, "q1": np.nan, "q3": np.nan, "ci_low": np.nan, "ci_high": np.nan}
                 if is_bin:                                       # mean = tỷ lệ JD, CI Wilson
                     lo, hi = wilson_ci(int(x.sum()), len(x))
@@ -292,6 +291,32 @@ def by_level_table(g_lv, roles, trend, min_cell):
                                trend_ci_high=round(t.ci_high, 3), trend_p_holm=round(t.p_holm, 4))
                 rows.append(row)
     return pd.DataFrame(rows).reindex(columns=BY_LEVEL_COLS)
+UNKNOWN_EXP = {"không rõ", ""}   # nhãn coi là thiếu
+# BẢNG PHÂN BỐ KINH NGHIỆM THEO NGHỀ VÀ LEVEL
+def _exp_key(s):
+    m = re.match(r"\s*(\d+)", s)           # "0-1" -> 0, "9+" -> 9
+    return int(m.group(1)) if m else 10**6
+
+def exp_distribution_table(g_lv, roles):
+    rows = []
+    lab = g_lv["exp_group"].astype(str).str.strip()
+    known = lab[~lab.str.lower().isin(UNKNOWN_EXP)]
+    exp_groups = sorted(known.unique(), key=_exp_key)     # 0-1, 1-2, ..., 9+
+    for role in roles:
+        gr = g_lv[g_lv.expertise_category == role]
+        for level in [ALL] + LEVELS:
+            c = gr if level == ALL else gr[gr.level_group == level]
+            if c.empty:
+                continue
+            e = c["exp_group"].astype(str).str.strip()
+            e_known = e[~e.str.lower().isin(UNKNOWN_EXP)]
+            n_jobs, n_with_exp = len(c), len(e_known)
+            for group in exp_groups:
+                n = int((e_known == group).sum())
+                rows.append({"role": role, "level": level, "exp_group": group, "n_jobs": n_jobs,
+                             "n_with_exp": n_with_exp, "n_missing_exp": n_jobs - n_with_exp, "n": n,
+                             "percentage": round(n / n_with_exp * 100, 2) if n_with_exp else np.nan})
+    return pd.DataFrame(rows)
 
 
 # BƯỚC 6  KỸ NĂNG HIẾM CỦA TỪNG NGHỀ
@@ -382,81 +407,13 @@ def level_skills_table(g_lv, skill_cols, roles, rare_by_role, hard_cols, min_tot
     return pd.DataFrame(rows).reindex(columns=LEVEL_SKILL_COLS), skipped, perm_info
 
 
-# BƯỚC 8  BÁO CÁO VÀ XUẤT FILE
-def build_report(ctx):
-    a, roles, by_level, trend, rare, lvl, perm_info = (ctx["a"], ctx["roles"], ctx["by_level"], ctx["trend"],
-                                                       ctx["rare"], ctx["lvl"], ctx["perm_info"])
-    rep = [f"Vị trí: {', '.join(roles)} | trục level: level_group ({' / '.join(LEVELS)}) | JD dùng: {ctx['n_jobs']}",
-           f"Nhãn lĩnh vực đã loại: {', '.join(short(c) for c in ctx['domain_cols']) or '(không)'}; "
-           f"n_skill_groups điều chỉnh ở {ctx['n_groups_adjusted']} JD" + ("" if ctx["has_group_map"] else " (KHÔNG có taxonomy nên chưa điều chỉnh)"),
-           f"Lọc: has_hard; loại {ctx['n_noise']} JD chỉ có noise và {ctx['n_no_level']} JD thiếu level_group",
-           f"Skill hiếm theo nghề: tần suất < {a.rare_pct:g}% trong JD của nghề (mọi level)",
-           f"Kỹ năng khó thủ công ({ctx['hard_src']}): {', '.join(short(c) for c in ctx['hard_cols'])}"
-           + (f" | không có cột/đã bị loại: {', '.join(ctx['hard_missing'])}" if ctx["hard_missing"] else ""), ""]
-
-    rep.append("=== Kiểm tra trục level: exp_min trung bình theo level_group (gộp 5 nghề) ===")
-    for lv, r in ctx["exp_by_level"].iterrows():
-        rep.append(f"  {lv:<8} n_with_exp={int(r['count']):<4} mean={r['mean']:.2f}  median={r['median']:.1f}")
-
-    rep.append("\n=== Độ rộng (n_hard_skills_dedup): median [Q1-Q3] theo nghề x level; [n] = số JD ===")
-    for role in roles:
-        parts = []
-        for lv in [ALL] + LEVELS:
-            r = by_level[(by_level.role == role) & (by_level.level == lv) & (by_level.metric == "n_hard_skills_dedup")]
-            if r.empty:
-                continue
-            r = r.iloc[0]
-            parts.append(f"{lv}: {r['median']:g} [{r.q1:g}-{r.q3:g}] [{r.n_jobs}]" + ("*" if r.cell_n_small else ""))
-        rep.append(f"  {role:<15} " + " | ".join(parts))
-    rep.append("  (* = ô có ít JD, chỉ mang tính tham khảo)")
-
-    rep.append("\n=== Xu hướng theo level (Spearman, level thứ bậc 0-3; CI bootstrap 95%; Holm giữa các nghề) ===")
-    for metric, _ in METRICS:
-        rep.append(f"  [{metric}]")
-        for r in trend[trend.metric == metric].itertuples():
-            if np.isnan(r.rho):
-                rep.append(f"    {r.role:<15} không đủ dữ liệu")
-            else:
-                rep.append(f"    {r.role:<15} n={r.n:<4} rho={r.rho:+.2f} [{r.ci_low:+.2f}; {r.ci_high:+.2f}]  p_holm={r.p_holm:.3f}")
-
-    rep.append("\n=== Kỹ năng hiếm của từng nghề ===")
-    for r in rare.itertuples():
-        rep.append(f"  {r.role:<15} n={r.n_jobs:<4} skill hiếm: {r.n_rare_skills}/{r.n_skills_present} ({r.pct_rare_of_present}% số skill xuất hiện); "
-                   f"chuẩn hóa cỡ {r.rarefy_n_used} JD: {r.n_rare_rarefied_mean} [{r.n_rare_rarefied_ci_low}; {r.n_rare_rarefied_ci_high}]; "
-                   f"lượt nhắc hiếm {r.share_mentions_rare_pct}%; đuôi dài TB {r.mean_n_tail_skills}/JD")
-
-    rep.append(f"\n=== Kỹ năng theo level: nhóm thấp ({'+'.join(LOW_LEVELS)}) vs nhóm cao ({'+'.join(HIGH_LEVELS)}) ===")
-    for role, (obs, pm, p95, nl, nh) in ctx["perm_info"].items():
-        verdict = "vượt ngưỡng ngẫu nhiên (p95)" if obs > p95 else "không vượt ngưỡng ngẫu nhiên"
-        rep.append(f"  {role:<15} thấp={nl}, cao={nh}: skill only_high quan sát={obs}, kỳ vọng ngẫu nhiên={pm:.1f} (p95={p95:.0f}) -> {verdict}")
-        sub = lvl[lvl.role == role]
-        top = sub[sub.diff_pp > 0].sort_values("diff_pp", ascending=False).head(a.top_n)
-        for s in top.itertuples():
-            tags = ("only_high " if s.only_high else "") + ("hiếm " if s.is_rare_in_role else "") + ("khó " if s.is_hard_manual else "")
-            rep.append(f"      {s.skill:<22} thấp {s.pct_low:>5.1f}% -> cao {s.pct_high:>5.1f}% (+{s.diff_pp:.1f} điểm %), p_holm={s.p_holm_in_role} {tags}")
-    for sk in ctx["skipped"]:
-        rep.append(f"  Bỏ qua (nhóm quá nhỏ): {sk}")
-
-    rep += ["", "=== Hạn chế cần ghi trong khóa luận ===",
-            "  - Nguồn tuyển dụng: dữ liệu gộp nhiều nền tảng, mỗi nền tảng ghi số skill và gắn tag khác nhau, cơ cấu nền tảng cũng khác giữa các nghề.",
-            "    Độ rộng chịu một phần ảnh hưởng từ phong cách đăng tin của nền tảng; nghiên cứu không tách riêng yếu tố này.",
-            "  - Độ rộng chỉ được mô tả và đo xu hướng theo level trong từng nghề, không kiểm định / xếp hạng giữa các nghề.",
-            "  - level_group lấy từ nhãn level của JD; ô Lead+ ở một số nghề (vd. Frontend) có rất ít JD.",
-            "  - n_skill_groups đếm số nhóm taxonomy (nhóm không cân bằng kích thước), chỉ là thước đo gần đúng của độ phức tạp tech stack.",
-            "  - 'Hiếm' tính theo nghề (< ngưỡng % trong nghề) và phụ thuộc cỡ mẫu nghề; số skill hiếm được chuẩn hóa bằng lấy mẫu con cùng cỡ.",
-            "  - Danh sách kỹ năng 'khó' là phân loại thủ công theo kiến thức chuyên ngành.",
-            "  - Skill 'chỉ có ở level cao' dễ xuất hiện do ngẫu nhiên khi nhóm cao nhỏ: luôn đối chiếu với đường cơ sở hoán vị.",
-            "  - JD có thể trùng theo công ty, CI có thể hẹp hơn thực tế."]
-    return rep
-
-
 # MAIN: chạy lần lượt Bước 1 -> 8
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", default="jd_skill_binary.csv")
     ap.add_argument("--outdir", default="rq3_out")
     ap.add_argument("--roles", default=",".join(TARGET_ROLES))
-    ap.add_argument("--domain-cols", default=DEFAULT_DOMAIN_COLS, help="nhãn lĩnh vực loại khỏi danh sách công nghệ (như RQ1)")
+    ap.add_argument("--domain-cols", default=DEFAULT_DOMAIN_COLS, help="nhãn lĩnh vực loại khỏi danh sách công nghệ")
     ap.add_argument("--taxonomy", default="skill_taxonomy.csv", help="dùng để điều chỉnh n_skill_groups khi bỏ nhãn lĩnh vực (tùy chọn)")
     ap.add_argument("--implied-pairs", default="", help="đường dẫn skill_implied_pairs.csv (mặc định: cạnh file input)")
     ap.add_argument("--hard-skills", default="", help="CSV danh sách kỹ năng khó (cột 'skill'); mặc định dùng đề xuất khởi đầu trong code")
@@ -470,8 +427,6 @@ def parse_args():
     ap.add_argument("--min-high", type=int, default=3, help="skill only_high cần xuất hiện ở >= bấy nhiêu JD nhóm cao")
     ap.add_argument("--min-group-n", type=int, default=10, help="nhóm thấp/cao của nghề cần >= bấy nhiêu JD mới phân tích")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--top-n", type=int, default=8, help="số skill hiển thị mỗi nghề trong báo cáo")
-    ap.add_argument("--report", action="store_true", help="ghi thêm rq3_report.txt")
     return ap.parse_args()
 
 
@@ -494,14 +449,18 @@ def main():
 
     # ---- BƯỚC 2: lọc JD và trục level
     g, n_noise = filter_jobs(df, roles)
+    # Chuẩn hóa level_group về đúng nhãn trong LEVELS (dữ liệu ghi chữ thường)
+    LEVEL_FIX = {lv.lower(): lv for lv in LEVELS}
+    g["level_group"] = g["level_group"].astype(str).str.strip().str.lower().map(LEVEL_FIX)
     n_no_level = int((~g.level_group.isin(LEVELS)).sum())
     print(f"[Bước 2] {len(g)} JD has_hard (loại {n_noise} JD noise); {n_no_level} JD thiếu level_group sẽ bị bỏ ở phân tích theo level")
-
+    print("Giá trị level_group trong dữ liệu:", g.level_group.value_counts(dropna=False).to_dict())
+    print("Số JD sau lọc level:", g.level_group.isin(LEVELS).sum(), "/", len(g))
     # ---- BƯỚC 3: hiếm theo nghề + đặc trưng từng JD
     rare_by_role = define_rare(g, skill_cols, roles, a.rare_pct)
     g = add_jd_features(g, rare_by_role, hard_cols)
     g_lv = g[g.level_group.isin(LEVELS)].copy()
-    exp_by_level = g_lv.groupby("level_group").exp_min.agg(["count", "mean", "median"]).reindex(LEVELS)
+    
     print("[Bước 3] skill hiếm theo nghề: " + ", ".join(f"{r} {len(rare_by_role[r])}" for r in roles))
 
     # ---- BƯỚC 4: xu hướng theo level
@@ -511,6 +470,8 @@ def main():
     # ---- BƯỚC 5: bảng nghề x level
     by_level = by_level_table(g_lv, roles, trend, a.min_cell)
     print(f"[Bước 5] {len(by_level)} dòng nghề x level x chỉ số")
+    exp_dist = exp_distribution_table(g_lv, roles)
+    print(f"[Bảng kinh nghiệm] {len(exp_dist)} dòng phân bố nghề x level x nhóm kinh nghiệm")
 
     # ---- BƯỚC 6: kỹ năng hiếm của nghề
     rare = rare_summary(g, skill_cols, roles, rare_by_role, hard_cols, a.rarefy_n, a.n_rarefy, a.rare_pct, a.seed)
@@ -528,15 +489,6 @@ def main():
     rare.to_csv(out / "rq3_rare_skills.csv", index=False, encoding="utf-8-sig")
     lvl.to_csv(out / "rq3_level_skills.csv", index=False, encoding="utf-8-sig")
     files = ["rq3_by_level.csv", "rq3_rare_skills.csv", "rq3_level_skills.csv"]
-    if a.report:
-        ctx = {"a": a, "roles": roles, "by_level": by_level, "trend": trend, "rare": rare, "lvl": lvl, "perm_info": perm_info,
-               "skipped": skipped, "domain_cols": domain_cols, "n_noise": n_noise, "n_no_level": n_no_level, "n_jobs": len(g_lv),
-               "n_groups_adjusted": int(g_lv.groups_adjusted.sum()), "has_group_map": bool(group_map),
-               "hard_cols": hard_cols, "hard_missing": hard_missing, "hard_src": hard_src, "exp_by_level": exp_by_level}
-        rep = build_report(ctx)
-        (out / "rq3_report.txt").write_text("\n".join(rep), encoding="utf-8")
-        files.append("rq3_report.txt")
-        print("\n".join(rep))
     print(f"[Bước 8] đã ghi vào {out}/: " + ", ".join(files))
 
 

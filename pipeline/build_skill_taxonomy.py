@@ -1,13 +1,15 @@
 """
 build_skill_taxonomy.py  -  taxonomy kỹ năng, bảng ánh xạ biến thể và ma trận binary skill
 
-Chạy: python build_skill_taxonomy.py --input jobs_clean.csv --outdir clean_out
+Chạy: python pipeline/build_skill_taxonomy.py --input data_private/jobs_clean.csv
 
 THUẬT TOÁN
   1. Chuẩn hóa token trong skills_raw (bỏ dấu, chữ thường, bỏ ký tự không phải chữ/số/+/#) rồi ánh xạ sang canonical
      bằng TAXONOMY (kèm alias). Token nhiễu (NOISE) bị bỏ; MULTI cho một token ứng với nhiều canonical.
   2. Roll-up cha-con (PARENTS, suy ra từ MULTI): có skill con thì tính là có skill cha.
   3. Ngoại ngữ / soft skill lấy từ văn bản JD (title + requirements + description), không lấy từ skills_raw.
+     Đây là nhánh ĐỘC LẬP với bước 1-2 (chỉ gặp nhau ở bước hợp tập). Danh sách ngoại ngữ do TAXONOMY định nghĩa
+     (LANGUAGES); regex nhận diện ở LANG_LATIN (văn bản đã bỏ dấu)
   4. Với mỗi hard skill tính số job, % trên tổng và theo từng nhóm nghề:
          prevalence = % job của nhóm có skill
          lift       = prevalence trong nhóm / prevalence ở các nhóm còn lại
@@ -15,10 +17,11 @@ THUẬT TOÁN
          (a) global        : số job >= --min-jobs (mặc định 50)
          (b) role_core     : ở một nhóm nghề có prevalence >= --role-min-pct (8%), >= --role-min-jobs (10) job
                              và lift >= --role-min-lift (1,5)
-         (c) language      : ngoại ngữ (English / Japanese / French) luôn được giữ
+         (c) language      : ngoại ngữ trong taxonomy có số job >= --lang-min-jobs (15) -> cột riêng; ngoại ngữ ít hơn
+                             ngưỡng này không vào binary (vẫn nằm trong taxonomy và được tính vào n_languages)
          (d) prog_language : ngôn ngữ lập trình có >= --prog-min-jobs (25) job
-  6. Gộp CISSP / CEH / OSCP / CISM thành cột skill_cert_security, ghép metadata và ghi jd_skill_binary.csv
-     cùng taxonomy, alias map, unmapped, role stats, implied pairs, report.
+  6. Gộp CISSP / CEH / OSCP / CISM thành cột skill_cert_security, thêm n_languages, ghép metadata và ghi jd_skill_binary.csv
+     cùng taxonomy, alias map, unmapped, implied pairs, report.
 """
 # Khai báo thư viện
 import argparse
@@ -32,10 +35,7 @@ import pandas as pd
 
 
 # DEFAULT_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer", "DevOps/SRE", "Mobile", "QA/Tester", "BA/PM", "Security", "Cloud"]
-LANGUAGES = ["English", "Japanese", "French"]
 CERT_GROUP = {"skill_cert_security": ["CISSP", "CEH", "OSCP", "CISM"]}
-
-
 META_COLS = ["job_uid", "source", "job_title", "company_name", "city", "expertise_category",
              "level_group", "exp_min", "exp_max", "exp_group",
              "job_url", "crawled_at"]
@@ -98,7 +98,7 @@ TAXONOMY = {
     },
     ("AI/ML", "ML/AI"): {
         "Machine Learning": ["ml"], "Deep Learning": ["dl"], "NLP": ["natural language processing"],
-        "Computer Vision": ["cv", "image processing", "opencv"], "LLM": ["llms", "large language model", "large language models"],
+        "Computer Vision": ["cv","image processing", "opencv"], "LLM": ["llms", "large language model", "large language models"],
         "Generative AI": ["genai", "gen ai"], "RAG": ["retrieval augmented generation"],
         "Agentic AI": ["ai agent", "ai agents", "agentic", "multi-agent"], "Prompt Engineering": [],
         "LangChain": ["langgraph"], "Hugging Face": ["transformers"], "PyTorch": [], "TensorFlow": ["keras"],
@@ -191,7 +191,10 @@ TAXONOMY = {
     ("Soft Skill", "Language"): {
         "English": ["tieng anh", "ielts", "toeic", "toefl", "english communication", "fluent english"],
         "Japanese": ["japanese it communication", "jlpt", "tieng nhat"], "Chinese": ["mandarin", "tieng trung", "hsk"],
-        "French": [], "Korean": ["tieng han", "topik"], "German": [],
+        "French": ["tieng phap"], "Korean": ["tieng han", "topik"], "German": ["tieng duc"],
+        "Spanish": ["tieng tay ban nha"], "Russian": ["tieng nga"], "Italian": ["tieng italia"],
+        "Portuguese": ["tieng bo dao nha"], "Thai": ["tieng thai"], "Indonesian": ["bahasa indonesia", "tieng indonesia"],
+        "Arabic": ["tieng a rap"],
     },
     ("Soft Skill", "Interpersonal"): {
         "Communication": ["communication skills", "giao tiep", "interpersonal skills", "presentation skills"],
@@ -206,7 +209,9 @@ TAXONOMY = {
         "Stakeholder Management": ["stakeholder", "stakeholders"],
     },
 }
-# Khai báo quy tắc bổ trợ (multi-canonical, parent, noise)
+# Danh sách ngoại ngữ lấy trực tiếp từ taxonomy (nguồn sự thật duy nhất): thêm ngôn ngữ = sửa TAXONOMY + LANG_LATIN/LANG_NATIVE
+LANGUAGES = list(TAXONOMY[("Soft Skill", "Language")])
+# Khai báo quy tắc bổ trợ (một token có thể tương ứng với nhiều canonical trong taxonomy)
 MULTI = {
     "eks": ["Kubernetes", "AWS"], "ecs": ["AWS", "Docker"], "embedded c": ["C", "Embedded"],
     "gitlab ci": ["GitLab CI", "CI/CD"], "github actions": ["GitHub Actions", "CI/CD"], "jenkins": ["Jenkins", "CI/CD"],
@@ -216,8 +221,8 @@ MULTI = {
     "snowflake": ["Snowflake", "Data Warehouse"], "azure synapse": ["Azure Synapse", "Azure", "Data Warehouse"],
     "vertex ai": ["Vertex AI", "GCP"],
 }
-PARENTS = {c[0]: c[1:] for t, c in MULTI.items() if len(c) > 1 and key(t) == key(c[0])}
-
+PARENTS = {c[0]: c[1:] for t, c in MULTI.items() if len(c) > 1 and key(t) == key(c[0])} # Xác định parent cho các canonical có cùng alias
+# Khai báo các token nhiễu, các token cần bỏ, các tiền tố nhiễu và regex để loại bỏ các token nhiễu (trừ Governance)
 NOISE = {key(x) for x in [
     "Engineering and Information Technology", "Information Technology", "Information Technology and Engineering", "Engineering",
     "Information Technology and Consulting", "Art/Creative", "Management and Manufacturing", "Manufacturing", "Sales", "Marketing",
@@ -228,12 +233,32 @@ DROP_TAGS = {key("Fresher Accepted"), key("Internship Accepted")}
 NOISE_PREFIX = ("and ",)
 NOISE_RE = re.compile(r"information technology|general business|business development|education and training|finance and sales|^apache$|^data-driven$", re.I)
 
-# Lấy skill nhóm mềm từ văn bản JD (title + requirements + description) bằng regex
-SOFT_TEXT = {
+# Nhận diện NGOẠI NGỮ từ văn bản JD. Hai tập mẫu, khóa phải trùng tên canonical trong TAXONOMY (có assert ở main):
+#   LANG_LATIN  : khớp trên văn bản đã bỏ dấu (tiếng Anh + tiếng Việt không dấu)
+#   LANG_NATIVE : khớp trên văn bản GỐC, vì chữ Hán / Hangul / Kana bị mất khi bỏ dấu bằng ASCII
+# Lưu ý: "Thái" sau khi bỏ dấu trùng tên riêng tiếng Việt (Thái Nguyên, Thái Bình...) nên "Thai" chỉ khớp khi đi kèm "tiếng"/"language".
+LANG_LATIN = {
     "English": r"\b(english|tieng anh|ielts|toeic|toefl)\b",
-    "Japanese": r"\b(japanese|tieng nhat|jlpt)\b|日本語",
-    "Korean": r"\b(korean|tieng han)\b", "Chinese": r"\b(chinese|mandarin|tieng trung)\b",
-    "French": r"\b(french|tieng phap)\b", "German": r"\b(german|tieng duc)\b",
+    "Japanese": r"\b(japanese|tieng nhat|jlpt)\b",
+    "Korean": r"\b(korean|tieng han|topik)\b",
+    "Chinese": r"\b(chinese|mandarin|tieng trung|hsk)\b",
+    "French": r"\b(french|tieng phap)\b",
+    "German": r"\b(german|tieng duc)\b",
+    "Spanish": r"\b(spanish|tieng tay ban nha)\b",
+    "Russian": r"\b(russian|tieng nga)\b",
+    "Italian": r"\b(italian|tieng italia)\b",
+    "Portuguese": r"\b(portuguese|tieng bo dao nha)\b",
+    "Thai": r"\b(tieng thai|thai language)\b",
+    "Indonesian": r"\b(indonesian|bahasa indonesia|tieng indonesia)\b",
+    "Arabic": r"\b(arabic|tieng a rap)\b",
+}
+LANG_NATIVE = {
+    "Japanese": r"日本語|日语|日語",
+    "Korean": r"한국어|韩语|韓語",
+    "Chinese": r"中文|汉语|漢語|普通话|普通話",
+}
+# Soft skill KHÔNG phải ngoại ngữ, lấy từ văn bản JD (title + requirements + description) bằng regex
+SOFT_TEXT = {
     "Communication": r"\b(communication skills?|giao tiep|interpersonal|presentation skills?)\b",
     "Teamwork": r"\b(team ?work|team player|lam viec nhom|lam viec theo nhom)\b",
     "Adaptability": r"\b(adaptab\w+|fast learner|quick learner|willingness to learn|kha nang thich nghi|ham hoc hoi)\b",
@@ -244,15 +269,34 @@ SOFT_TEXT = {
     "Leadership": r"\b(leadership|lanh dao)\b",
     "Team Management": r"\b((team|people) management|manage[sd]? (a |the |our )?(engineering |technical )?teams?|mentor(ing|s)? (junior|team|engineers|others)|coach(ing)? (junior|team)|quan ly nhom)\b",
     "Stakeholder Management": r"\b(stakeholder (management|engagement|communication)|manage stakeholders|quan ly stakeholder)\b",
-}
-SOFT_RX = {c: re.compile(p, re.I) for c, p in SOFT_TEXT.items()}
+} # Biểu thức mẫu regex dạng chuỗi
+SOFT_RX = {c: re.compile(p, re.I) for c, p in SOFT_TEXT.items()} # Biểu thức mẫu regex đã biên dịch từ chuỗi
+LANG_RX = {c: re.compile(p, re.I) for c, p in LANG_LATIN.items()}
+LANG_NATIVE_RX = {c: re.compile(p) for c, p in LANG_NATIVE.items()}
 
+# Bỏ dấu tiếng Việt, về ASCII, gộp khoảng trắng (dùng cho LANG_LATIN và SOFT_TEXT)
+def _fold(text):
+    t = unicodedata.normalize("NFKD", text.replace("đ", "d").replace("Đ", "D")).encode("ascii", "ignore").decode()
+    return re.sub(r"\s+", " ", t)
+
+# Trích soft skill + ngoại ngữ từ văn bản
 def soft_from_text(text):
-    t = re.sub(r"\s+", " ", unicodedata.normalize("NFKD", text.replace("đ", "d").replace("Đ", "D")).encode("ascii", "ignore").decode()
-               if not re.search("日本語", text) else text)
-    return {c for c, rx in SOFT_RX.items() if rx.search(t)}
+    t = _fold(text)
+    raw = re.sub(r"\s+", " ", text)
+    found = {c for c, rx in SOFT_RX.items() if rx.search(t)}
+    found |= {c for c, rx in LANG_RX.items() if rx.search(t)}
+    found |= {c for c, rx in LANG_NATIVE_RX.items() if rx.search(raw)}
+    return found
 
-# Xây dựng alias cho các skill
+# Đoạn trích quanh từ khóa khớp (phục vụ kiểm tra tay precision, xem --audit-lang)
+def lang_matches(text, lang):
+    out = []
+    for rx, src in ((LANG_RX.get(lang), _fold(text)), (LANG_NATIVE_RX.get(lang), text)):
+        if rx is not None:
+            out += [src[max(0, m.start() - 40): m.end() + 40].replace("\n", " ") for m in rx.finditer(src)]
+    return out
+
+# Xây dựng alias cho các skill (ví dụ "js" -> "JavaScript", "reactjs" -> "React", "python" -> "Python")
 def build_alias():
     alias, meta = {}, {}
     for (group, sub), skills in TAXONOMY.items():
@@ -268,7 +312,7 @@ def build_alias():
         alias[key(a)] = canons
     return alias, meta
 
-
+# Chuẩn hóa tên cột canonical (dùng cho ma trận)
 def slug(canon, prefix):
     s = canon.lower().replace("c++", "cpp").replace("c#", "csharp").replace(".net", "dotnet")
     return prefix + re.sub(r"[^a-z0-9]+", "_", s).strip("_")
@@ -276,28 +320,33 @@ def slug(canon, prefix):
 # Nhận tham số và kiểm tra dữ liệu đầu vào và xuất kết quả
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--input", default="jobs_clean.csv")
-    ap.add_argument("--outdir", default="clean_out")
+    ap.add_argument("--input", default="data_private/jobs_clean.csv")
+    ap.add_argument("--outdir", default="data_private")
     ap.add_argument("--min-jobs", type=int, default=50, help="quy tắc (a) global: số job tối thiểu trên toàn dữ liệu để 1 skill vào binary (~2%%)")
     ap.add_argument("--roles", default="ALL", help="'ALL' (mặc định, dùng MỌI nhóm nghề có trong dữ liệu cho quy tắc role_core) hoặc danh sách cách nhau bằng dấu phẩy")
     ap.add_argument("--role-min-pct", type=float, default=0.08, help="quy tắc (b) role_core: %% tối thiểu trong 1 nhóm nghề (0.08 = 8%%)")
     ap.add_argument("--role-min-jobs", type=int, default=10, help="quy tắc (b) role_core: số job tối thiểu có skill đó trong nhóm nghề")
     ap.add_argument("--role-min-lift", type=float, default=1.5, help="quy tắc (b) role_core: tỷ lệ trong nhóm phải cao hơn ít nhất bấy nhiêu lần so với các nhóm còn lại")
     ap.add_argument("--prog-min-jobs", type=int, default=25, help="quy tắc (d): ngôn ngữ lập trình có >= số job này thì vào binary")
+    ap.add_argument("--lang-min-jobs", type=int, default=25, help="quy tắc (c): ngoại ngữ có >= số job này được giữ cột riêng; ít hơn thì không vào binary")
+    ap.add_argument("--audit-lang", type=int, default=0, help="N > 0: ghi skill_lang_audit.csv (mẫu N job mỗi ngoại ngữ, kèm đoạn trích) để kiểm tay precision; 0 = tắt")
     a = ap.parse_args()
     out = Path(a.outdir); out.mkdir(parents=True, exist_ok=True)
     need = list(dict.fromkeys(META_COLS + ["skills_raw", "requirements_raw", "description_raw"]))
     head = pd.read_csv(a.input, nrows=0).columns
+    # Kiểm tra dữ liệu đầu vào có đủ cột cần thiết
     miss = [c for c in need if c not in head]
     if miss:
         raise SystemExit(f"{a.input} thiếu cột: {miss} -- kiểm tra đã chạy clean_jobs.py bản mới nhất chưa.")
     df = pd.read_csv(a.input, usecols=need)
-    if df.job_uid.duplicated().any():
+    if df.job_uid.duplicated().any(): # kiểm tra trùng job_uid
         raise SystemExit(f"job_uid trùng lặp: {int(df.job_uid.duplicated().sum())} dòng -- sửa jobs_clean trước khi chạy.")
-    roles = sorted(df.expertise_category.dropna().unique(), key=lambda r: -(df.expertise_category == r).sum()) \
-        if a.roles == "ALL" else [r.strip() for r in a.roles.split(",") if r.strip()]
+    roles = (sorted(df.expertise_category.dropna().unique(), key=lambda r: -(df.expertise_category == r).sum())
+             if a.roles == "ALL" else [r.strip() for r in a.roles.split(",") if r.strip()])
     alias, meta = build_alias()
     assert all(c in meta for c in SOFT_TEXT), "SOFT_TEXT có canonical lạ"
+    assert set(LANG_LATIN) == set(LANGUAGES), f"LANG_LATIN lệch taxonomy: {sorted(set(LANG_LATIN) ^ set(LANGUAGES))}"
+    assert set(LANG_NATIVE) <= set(LANGUAGES), f"LANG_NATIVE có ngôn ngữ lạ: {sorted(set(LANG_NATIVE) - set(LANGUAGES))}"
     # ---Ánh xạ token cho từng JD---
     var_cnt = Counter()
     unmapped = Counter()
@@ -322,6 +371,7 @@ def main():
         for c in list(sk):
             sk.update(PARENTS.get(c, []))
         sk = {c for c in sk if meta[c]["type"] == "hard"}
+        # Nhánh văn bản JD độc lập với skills_raw nhưng phải cộng SAU bộ lọc hard ở trên, nếu không soft skill bị loại
         sk |= soft_from_text(" \n ".join(x for x in (ti, rq, ds) if isinstance(x, str)))
         job_skills[uid] = sk
 
@@ -344,7 +394,7 @@ def main():
     n_has_total = sum(role_tot_all.values())
     src_tot_h = df[has].source.value_counts().to_dict()
     src_tot_a = df.source.value_counts().to_dict()
-    rows, role_rows = [], []
+    rows = []
     for c, m in meta.items():
         n = cnt.get(c, 0)
         den, st = (n_jobs, src_tot_h) if m["type"] == "hard" else (len(df), src_tot_a)
@@ -360,15 +410,12 @@ def main():
                 tot_other = n_has_total - tot_r
                 p_other = n_other / tot_other if tot_other else 0
                 lift = (p_r / p_other) if p_other > 0 else (np.inf if p_r > 0 else 0)
-                role_rows.append({"canonical": c, "group": m["group"], "role": r, "n_role_jobs": tot_r, "n_in_role": n_r,
-                                  "prevalence_pct": round(100 * p_r, 2), "prevalence_rest_pct": round(100 * p_other, 2),
-                                  "lift": 999.0 if lift == np.inf else round(float(lift), 2)})
                 if n_r >= a.role_min_jobs and p_r >= a.role_min_pct and lift >= a.role_min_lift:
                     qualifying.append((r, p_r, lift))
         qualifying.sort(key=lambda t: -t[2])
         is_global = bool(m["type"] == "hard" and n >= a.min_jobs)
         is_role_core = bool(qualifying)
-        is_lang = c in LANGUAGES
+        is_lang = c in LANGUAGES and n >= a.lang_min_jobs
         is_prog = bool(m["group"] == "Programming Language" and n >= a.prog_min_jobs and not (is_global or is_role_core))
         reason = "+".join(x for x in ("global" if is_global else "", "role_core" if is_role_core else "",
                                       "language" if is_lang else "", "prog_language" if is_prog else "") if x)
@@ -405,7 +452,10 @@ def main():
         col = slug(r.canonical, "skill_")
         assert col not in hard_cols, f"trùng tên cột {col}: {r.canonical} / {hard_cols[col]}"
         hard_cols[col] = r.canonical
-    lang_cols = {f"skill_{l.lower()}": l for l in LANGUAGES}
+    lang_keep = set(sel.loc[sel.binary_reason.str.split("+").apply(lambda xs: "language" in xs), "canonical"])
+    lang_cols = {slug(l, "skill_"): l for l in LANGUAGES if l in lang_keep}
+    for col in lang_cols:
+        assert col not in hard_cols, f"trùng tên cột {col}"
     bin_rows = []
     for uid in df.job_uid:
         sk = job_skills[uid]
@@ -415,6 +465,7 @@ def main():
                "n_hard_skills": len(hs) if ok else None,
                "n_skill_groups": len({meta[c]["group"] for c in hs}) if ok else None,
                "skills_status": "none" if not ok else ("has_hard" if hs else "noise_only")}
+        row["n_languages"] = sum(l in sk for l in LANGUAGES)
         row.update({col: int(l in sk) for col, l in lang_cols.items()})
         row.update({col: int(c in sk) for col, c in hard_cols.items()})
         row["skill_cert_security"] = int(any(c in sk for c in cert_members))
@@ -423,6 +474,22 @@ def main():
     assert (bin_df.job_uid.values == df.job_uid.values).all()
     final = pd.concat([df[META_COLS].reset_index(drop=True), bin_df.drop(columns="job_uid")], axis=1)
     final.to_csv(out / OUT_NAME, index=False, encoding="utf-8-sig")
+
+    # ---- (tùy chọn) skill_lang_audit.csv: mẫu job theo ngoại ngữ để kiểm tay precision regex ----
+    if a.audit_lang > 0:
+        txt = {u: " \n ".join(x for x in (ti, rq, ds) if isinstance(x, str))
+               for u, ti, rq, ds in zip(df.job_uid, df.job_title, df.requirements_raw, df.description_raw)}
+        rng = np.random.default_rng(42)
+        audit = []
+        for l in LANGUAGES:
+            ids = [u for u, sk in job_skills.items() if l in sk]
+            pick = rng.choice(ids, size=min(a.audit_lang, len(ids)), replace=False) if ids else []
+            for u in pick:
+                audit.append({"language": l, "n_jobs_language": len(ids), "job_uid": u,
+                              "snippet": " ... ".join(lang_matches(txt[u], l)[:2]), "is_correct": ""})
+        pd.DataFrame(audit, columns=["language", "n_jobs_language", "job_uid", "snippet", "is_correct"]).to_csv(
+            out / "skill_lang_audit.csv", index=False, encoding="utf-8-sig")
+        print(f"Ghi skill_lang_audit.csv: {len(audit)} dòng (điền cột is_correct để tính precision từng ngoại ngữ).")
 
     # ---- skill_implied_pairs.csv: cặp con -> cha do luật roll-up (PARENTS) tự tạo ra, 100% theo cấu trúc ----
     final_cols = set(final.columns)
@@ -464,7 +531,7 @@ def main():
     is_role_core_s = sel.binary_reason.str.contains("role_core")
     rep += ["", f"in_binary: {len(hard_cols)} hard ({int(is_global_s.sum())} qua quy tắc (a) global >= {a.min_jobs} job, "
             f"{int(is_role_core_s.sum())} qua quy tắc (b) role_core, "
-            f"{int((is_global_s & is_role_core_s).sum())} đạt CẢ HAI) + {len(lang_cols)} ngoại ngữ + skill_cert_security (gộp {len(cert_members)} chứng chỉ)",
+            f"{int((is_global_s & is_role_core_s).sum())} đạt CẢ HAI) + {len(lang_cols)} ngoại ngữ (>= {a.lang_min_jobs} job) + skill_cert_security (gộp {len(cert_members)} chứng chỉ)",
             f"Trong đó 'định danh nhóm nghề' (is_role_defining=True, tức đạt role_core ở >=1 nhóm): {int(hard.is_role_defining.sum())}/{len(hard)} "
             f"hard skill trong toàn bộ taxonomy, {int(sel[sel.type=='hard'].is_role_defining.sum())}/{len(hard_cols)} skill trong binary.",
             "", "=== Cơ cấu nhóm nghề trong dữ liệu (job có skills_raw) -- minh họa vì sao ngưỡng global (a) phụ thuộc cơ cấu này ===",
@@ -497,10 +564,14 @@ def main():
     else:
         rep.append("  (Không có nhóm nghề 'Security' trong dữ liệu hoặc không có skill nào đạt role_core cho nhóm này.)")
 
+    langs_present = [l for l in LANGUAGES if cnt.get(l, 0) > 0]
+    lang_drop = [l for l in langs_present if l not in lang_cols.values()]
+    rep += ["", f"Ngoại ngữ có cột riêng (>= {a.lang_min_jobs} job): " + (", ".join(f"{l}({cnt[l]})" for l in lang_cols.values()) or "(không có)"),
+            f"Ngoại ngữ dưới ngưỡng, không vào binary: " + (", ".join(f"{l}({cnt[l]})" for l in lang_drop) or "(không có)")]
     rep += ["", "Ngoại ngữ theo nhóm nghề (số job / tổng job của nhóm, từ JD text):"]
     for r_ in roles:
         ids = [u for u in df.job_uid[df.expertise_category == r_]]
-        rep.append(f"  {r_:<15} n={len(ids):>4}  " + "  ".join(f"{l}={sum(l in job_skills[u] for u in ids)}" for l in LANGUAGES)
+        rep.append(f"  {r_:<15} n={len(ids):>4}  " + "  ".join(f"{l}={sum(l in job_skills[u] for u in ids)}" for l in langs_present)
                    + f"  >=1_ngoai_ngu={sum(any(l in job_skills[u] for l in LANGUAGES) for u in ids)}")
     rep += [
             "", "Soft skill (từ JD text) - % job theo nguồn:"]
