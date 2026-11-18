@@ -1,70 +1,37 @@
 ﻿city,level,n_jobs_in_level,n_jobs_city_total,pct_of_city_jobs,ci_low_pct,ci_high_pct,pct_of_all_senior_plus_jobs,city_sample_reliable
-Hồ Chí Minh,Lead+,234,1272,18.4,16.4,20.6,,True
-Hà Nội,Lead+,147,944,15.6,13.4,18.0,,True
-Đà Nẵng,Lead+,13,93,14.0,8.4,22.5,,True
-Bắc Ninh,Lead+,1,1,100.0,20.7,100.0,,False
-Hà Giang,Lead+,1,4,25.0,4.6,69.9,,False
-Hồ chí minh,Lead+,1,1,100.0,20.7,100.0,,False
-Bình Dương,Lead+,0,1,0.0,0.0,79.3,,False
-Cà Mau,Lead+,0,4,0.0,0.0,49.0,,False
-Cần Thơ,Lead+,0,8,0.0,0.0,32.4,,False
-Hưng Yên,Lead+,0,1,0.0,0.0,79.3,,False
-Hải Dương,Lead+,0,14,0.0,0.0,21.5,,False
-Hải Phòng,Lead+,0,1,0.0,0.0,79.3,,False
-Lào Cai,Lead+,0,1,0.0,0.0,79.3,,False
-Lạng Sơn,Lead+,0,4,0.0,0.0,49.0,,False
-Nam Định,Lead+,0,1,0.0,0.0,79.3,,False
-Nghệ An,Lead+,0,13,0.0,0.0,22.8,,False
-Ninh Bình,Lead+,0,1,0.0,0.0,79.3,,False
-Phú Thọ,Lead+,0,1,0.0,0.0,79.3,,False
-Quảng Ninh,Lead+,0,1,0.0,0.0,79.3,,False
-Thái Nguyên,Lead+,0,2,0.0,0.0,65.8,,False
-Tây Ninh,Lead+,0,1,0.0,0.0,79.3,,False
-Đồng Nai,Lead+,0,2,0.0,0.0,65.8,,False
-Đồng Tháp,Lead+,0,2,0.0,0.0,65.8,,False
-Hồ Chí Minh,Senior,534,1272,42.0,39.3,44.7,,True
-Hà Nội,Senior,339,944,35.9,32.9,39.0,,True
-Đà Nẵng,Senior,35,93,37.6,28.5,47.8,,True
-Hải Dương,Senior,4,14,28.6,11.7,54.6,,False
-Nghệ An,Senior,4,13,30.8,12.7,57.6,,False
-Cà Mau,Senior,3,4,75.0,30.1,95.4,,False
-Cần Thơ,Senior,3,8,37.5,13.7,69.4,,False
-Hà Giang,Senior,1,4,25.0,4.6,69.9,,False
-Hưng Yên,Senior,1,1,100.0,20.7,100.0,,False
-Đồng Nai,Senior,1,2,50.0,9.5,90.5,,False
-Đồng Tháp,Senior,1,2,50.0,9.5,90.5,,False
-Bình Dương,Senior,0,1,0.0,0.0,79.3,,False
-Bắc Ninh,Senior,0,1,0.0,0.0,79.3,,False
-Hải Phòng,Senior,0,1,0.0,0.0,79.3,,False
-Hồ chí minh,Senior,0,1,0.0,0.0,79.3,,False
-Lào Cai,Senior,0,1,0.0,0.0,79.3,,False
-Lạng Sơn,Senior,0,4,0.0,0.0,49.0,,False
-Nam Định,Senior,0,1,0.0,0.0,79.3,,False
-Ninh Bình,Senior,0,1,0.0,0.0,79.3,,False
-Phú Thọ,Senior,0,1,0.0,0.0,79.3,,False
-Quảng Ninh,Senior,0,1,0.0,0.0,79.3,,False
-Thái Nguyên,Senior,0,2,0.0,0.0,65.8,,False
-Tây Ninh,Senior,0,1,0.0,0.0,79.3,,False
-Hồ Chí Minh,Senior+ (gộp 2 bậc trên),768,1272,60.4,57.7,63.0,58.0,True
-Hà Nội,Senior+ (gộp 2 bậc trên),486,944,51.5,48.3,54.7,36.7,True
-Đà Nẵng,Senior+ (gộp 2 bậc trên),48,93,51.6,41.6,61.5,3.6,True
-Hải Dương,Senior+ (gộp 2 bậc trên),4,14,28.6,11.7,54.6,0.3,False
-Nghệ An,Senior+ (gộp 2 bậc trên),4,13,30.8,12.7,57.6,0.3,False
-Cà Mau,Senior+ (gộp 2 bậc trên),3,4,75.0,30.1,95.4,0.2,False
-Cần Thơ,Senior+ (gộp 2 bậc trên),3,8,37.5,13.7,69.4,0.2,False
-Hà Giang,Senior+ (gộp 2 bậc trên),2,4,50.0,15.0,85.0,0.2,False
-Bắc Ninh,Senior+ (gộp 2 bậc trên),1,1,100.0,20.7,100.0,0.1,False
-Hưng Yên,Senior+ (gộp 2 bậc trên),1,1,100.0,20.7,100.0,0.1,False
-Hồ chí minh,Senior+ (gộp 2 bậc trên),1,1,100.0,20.7,100.0,0.1,False
-Đồng Nai,Senior+ (gộp 2 bậc trên),1,2,50.0,9.5,90.5,0.1,False
-Đồng Tháp,Senior+ (gộp 2 bậc trên),1,2,50.0,9.5,90.5,0.1,False
-Bình Dương,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Hải Phòng,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Lào Cai,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Lạng Sơn,Senior+ (gộp 2 bậc trên),0,4,0.0,0.0,49.0,0.0,False
-Nam Định,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Ninh Bình,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Phú Thọ,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Quảng Ninh,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
-Thái Nguyên,Senior+ (gộp 2 bậc trên),0,2,0.0,0.0,65.8,0.0,False
-Tây Ninh,Senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
+Hồ Chí Minh,lead+,144,981,14.7,12.6,17.0,,True
+Hà Nội,lead+,91,697,13.1,10.8,15.8,,True
+Đà Nẵng,lead+,6,69,8.7,4.0,17.7,,True
+Hà Giang,lead+,1,3,33.3,6.1,79.2,,False
+Bắc Ninh,lead+,0,1,0.0,0.0,79.3,,False
+Cà Mau,lead+,0,3,0.0,0.0,56.2,,False
+Cần Thơ,lead+,0,7,0.0,0.0,35.4,,False
+Hưng Yên,lead+,0,1,0.0,0.0,79.3,,False
+Hải Dương,lead+,0,5,0.0,0.0,43.4,,False
+Nam Định,lead+,0,1,0.0,0.0,79.3,,False
+Nghệ An,lead+,0,9,0.0,0.0,29.9,,False
+Đồng Nai,lead+,0,1,0.0,0.0,79.3,,False
+Hồ Chí Minh,senior,395,981,40.3,37.2,43.4,,True
+Hà Nội,senior,267,697,38.3,34.8,42.0,,True
+Đà Nẵng,senior,18,69,26.1,17.2,37.5,,True
+Cần Thơ,senior,3,7,42.9,15.8,75.0,,False
+Nghệ An,senior,3,9,33.3,12.1,64.6,,False
+Cà Mau,senior,2,3,66.7,20.8,93.9,,False
+Hải Dương,senior,2,5,40.0,11.8,76.9,,False
+Hưng Yên,senior,1,1,100.0,20.7,100.0,,False
+Bắc Ninh,senior,0,1,0.0,0.0,79.3,,False
+Hà Giang,senior,0,3,0.0,0.0,56.2,,False
+Nam Định,senior,0,1,0.0,0.0,79.3,,False
+Đồng Nai,senior,0,1,0.0,0.0,79.3,,False
+Hồ Chí Minh,senior+ (gộp 2 bậc trên),539,981,54.9,51.8,58.0,57.8,True
+Hà Nội,senior+ (gộp 2 bậc trên),358,697,51.4,47.7,55.1,38.4,True
+Đà Nẵng,senior+ (gộp 2 bậc trên),24,69,34.8,24.6,46.6,2.6,True
+Cần Thơ,senior+ (gộp 2 bậc trên),3,7,42.9,15.8,75.0,0.3,False
+Nghệ An,senior+ (gộp 2 bậc trên),3,9,33.3,12.1,64.6,0.3,False
+Cà Mau,senior+ (gộp 2 bậc trên),2,3,66.7,20.8,93.9,0.2,False
+Hải Dương,senior+ (gộp 2 bậc trên),2,5,40.0,11.8,76.9,0.2,False
+Hà Giang,senior+ (gộp 2 bậc trên),1,3,33.3,6.1,79.2,0.1,False
+Hưng Yên,senior+ (gộp 2 bậc trên),1,1,100.0,20.7,100.0,0.1,False
+Bắc Ninh,senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
+Nam Định,senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False
+Đồng Nai,senior+ (gộp 2 bậc trên),0,1,0.0,0.0,79.3,0.0,False

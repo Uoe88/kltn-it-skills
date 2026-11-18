@@ -1,8 +1,4 @@
-"""Dashboard Streamlit cho 4 câu hỏi nghiên cứu (rq1_analysis, rq2_bara, rq3_analysis, rq4_geography).
-
-Chỉ ĐỌC kết quả các script đã chạy (thư mục results/rq1_out ... rq4_out), nên số liệu trên dashboard
-trùng khớp báo cáo. Riêng tab Tổng quan đọc thẳng jd_skill_binary.csv (nếu có).
-Chỉ cần theme.py cạnh file này (không cần analytics.py, jd_loader.py).
+"""Dashboard Streamlit cho 4 câu hỏi nghiên cứu (rq1_analysis, rq2_analysis, rq3_analysis, rq4_geography).
 
 Chạy:
     python -m streamlit run app.py
@@ -27,14 +23,10 @@ SENIOR_PLUS = "Senior+ (gộp 2 bậc trên)"
 ALL_ROLES = "TẤT CẢ nhóm nghề"
 BIN_METRICS = {"has_rare_skill", "has_hard_manual"}
 METRIC_LABELS = {
-    "n_hard_skills_dedup": "Độ rộng: số hard skill (đã loại trùng cha-con)",
-    "n_hard_skills": "Độ rộng: số hard skill (chưa loại trùng)",
+    "n_hard_skills_dedup": "Độ rộng: số skill (đã lọc trùng cha-con)",
     "n_skill_groups": "Độ phức tạp: số nhóm kỹ năng",
     "n_rare_skills": "Số skill hiếm mỗi JD",
-    "has_rare_skill": "% JD có ít nhất 1 skill hiếm",
-    "n_hard_manual": "Số skill khó (danh sách thủ công) mỗi JD",
-    "has_hard_manual": "% JD có ít nhất 1 skill khó",
-    "n_tail_skills": "Số skill đuôi dài mỗi JD",
+    "n_hard_manual": "Số skill khó mỗi JD",
 }
 
 
@@ -102,12 +94,29 @@ def lab_combo(s):
     return " + ".join(lab(p.strip()) for p in str(s).split(" + "))
 
 
+def canon_role(s):
+    """Gộp các nhãn chỉ khác hoa/thường hoặc khoảng trắng (vd 'Security' và 'security') về dạng viết phổ biến nhất."""
+    s = s.astype("string").str.strip()
+    key = s.str.casefold()
+    canon = s.groupby(key).agg(lambda x: x.value_counts().idxmax())
+    return key.map(canon)
+
+
 def as_bool(s):
     return s.astype(str).str.strip().str.lower().eq("true")
 
 
 def with_err(d, pct="pct", lo="ci_low_pct", hi="ci_high_pct"):
     return d.assign(err_plus=(d[hi] - d[pct]).clip(lower=0), err_minus=(d[pct] - d[lo]).clip(lower=0))
+
+
+def top_n(label, available, default, key, lo=3):
+    """Thanh trượt 'số phần tử hiển thị': chỉ kéo tới số phần tử THẬT SỰ có (kéo quá số đó không thay đổi gì nên vô nghĩa).
+    Ít hơn mức tối thiểu thì không hiện thanh trượt, hiển thị hết."""
+    available = int(available)
+    if available <= lo:
+        return available
+    return st.slider(label, lo, available, min(int(default), available), key=f"{key}_{available}")
 
 
 def bar_h(n, per=24, base=140, lo=320):
@@ -130,6 +139,8 @@ def tab_overview():
         st.info("Chưa tìm thấy jd_skill_binary.csv (đặt cạnh app.py hoặc trong thư mục data/) nên chưa có số liệu tổng quan. Các trang RQ vẫn dùng được.")
         return
     jd = _read_csv(JD_PATH, Path(JD_PATH).stat().st_mtime)
+    if "expertise_category" in jd.columns:
+        jd = jd.assign(expertise_category=canon_role(jd.expertise_category))
     c = st.columns(4)
     c[0].metric("Số job", f"{len(jd):,}")
     if "expertise_category" in jd.columns:
@@ -151,8 +162,7 @@ def tab_overview():
         st.plotly_chart(px.bar(x, x="expertise_category", y="n", color="source", barmode="stack",
                                labels={"expertise_category": "Nhóm nghề", "n": "Số job", "source": "Nguồn"},
                                title="Cơ cấu nguồn của từng nhóm nghề"))
-        note("Nhóm nghề và nguồn tuyển dụng gần như trùng nhau (mỗi nguồn nghiêng về vài nhóm nghề), nên khác biệt giữa nhóm nghề "
-             "có thể lẫn với cách đăng tin của từng nền tảng. Đây là hạn chế của đề tài.")
+    
 
 
 # ----------------------------------------------------------------------------- RQ1: core stack
@@ -172,7 +182,8 @@ def tab_rq1():
         st.warning(f"{role} chỉ có {n} JD có hard skill: tỷ lệ dao động mạnh, đọc kèm khoảng tin cậy và chỉ mô tả.")
     c1, c2 = st.columns(2)
     tiers = c1.multiselect("Tầng hiển thị", ["core", "common"], default=["core", "common"], key="rq1_tiers")
-    top = c2.slider("Số skill", 5, 40, 20, key="rq1_top")
+    with c2:
+        top = top_n("Số skill", sub.tier.isin(tiers).sum(), 20, "rq1_top", lo=5)
     view = sub[sub.tier.isin(tiers)].sort_values("pct", ascending=False).head(top)
     if view.empty:
         st.info("Không có skill nào ở tầng đã chọn.")
@@ -183,14 +194,6 @@ def tab_rq1():
                                labels={"pct": "% JD yêu cầu", "skill_label": "Skill", "tier": "Tầng"},
                                title=f"{role}: n = {n} JD có hard skill", height=bar_h(len(view))))
 
-    st.subheader("So sánh core stack giữa các vị trí")
-    keep = core[core.tier == "core"].groupby("skill_label").pct.max().sort_values(ascending=False).head(30).index
-    m = core[core.skill_label.isin(keep)].pivot_table(index="skill_label", columns="role", values="pct")
-    m = m.reindex(index=list(keep), columns=roles)
-    st.plotly_chart(px.imshow(m.round(1), aspect="auto", text_auto=".0f", color_continuous_scale=T.SEQ,
-                              labels=dict(color="% JD"), height=bar_h(len(m), per=22)))
-    st.caption("Ô trống = skill đó dưới ngưỡng common (15%) ở vị trí tương ứng.")
-
     st.subheader("Tổ hợp kỹ năng đi cùng nhau")
     if combos is None or combos.empty:
         st.info("Chưa có rq1_combos.csv hoặc không đủ skill ở tầng core/common để tính tổ hợp.")
@@ -199,8 +202,10 @@ def tab_rq1():
         c1, c2 = st.columns(2)
         size = c1.radio("Cỡ tổ hợp", [2, 3], horizontal=True, key="rq1_size",
                         format_func=lambda s: "Cặp (2 skill)" if s == 2 else "Bộ ba (3 skill)")
-        topc = c2.slider("Số tổ hợp", 5, 30, 12, key="rq1_topc")
-        cs = cr[cr["size"] == size].sort_values("pct", ascending=False).head(topc).copy()
+        pool = cr[cr["size"] == size]
+        with c2:
+            topc = top_n("Số tổ hợp", len(pool), 12, "rq1_topc", lo=5)
+        cs = pool.sort_values("pct", ascending=False).head(topc).copy()
         if cs.empty:
             st.info("Vị trí này không có tổ hợp đạt ngưỡng support.")
         else:
@@ -239,23 +244,52 @@ def tab_rq2():
     except ImportError:
         st.error("Cần thư viện openpyxl để đọc rq2_density.xlsx: chạy `python -m pip install openpyxl`.")
         return
+    def norm(d):
+        """Chuẩn hóa cột/nhãn để đọc được cả rq2_bara.py bản cũ lẫn bản đơn giản (n_jobs_has_skill, dòng 'ALL')."""
+        d = d.copy()
+        if "n_matched" not in d.columns and "n_jobs_has_skill" in d.columns:
+            d["n_matched"] = d["n_jobs_has_skill"]
+        if "n_denominator" not in d.columns:
+            d["n_denominator"] = d["n_jobs"]
+        d["role"] = d["role"].replace({"ALL": ALL_ROLES})
+        return d
+
     parts = []
-    for name, label in (("Cloud_DevOps", "Cloud/DevOps"), ("AI_LLM", "AI/LLM")):
-        d = sheets.get(name)
-        if d is not None and len(d):
-            parts.append(d.assign(metric=label, group="Công nghệ"))
+    d = sheets.get("Cloud_DevOps")
+    if d is not None and len(d):
+        parts.append(norm(d).assign(metric="Cloud/DevOps", group="Công nghệ"))
+    # Bản mới ghi AI_ML (cột ai_group); AI_LLM là tên cũ; AI_GenAI là sheet của rq2_bara.py bản đơn giản
+    ai = next((sheets[k] for k in ("AI_ML", "AI_LLM", "AI_GenAI") if k in sheets), None)
+    if ai is not None and len(ai):
+        ai = norm(ai)
+        parts.append(ai.assign(metric=ai["ai_group"] if "ai_group" in ai.columns else "AI/GenAI", group="Công nghệ"))
+    else:
+        st.warning("Không có dữ liệu nhóm AI trong rq2_density.xlsx (không có sheet AI_ML/AI_LLM/AI_GenAI, hoặc sheet trống), nên nhóm này không hiện. "
+                   "Nguyên nhân thường gặp: cột group của skill_taxonomy.csv không có giá trị 'AI/ML' (xem rq2_bara.py). "
+                   f"Sheet tìm thấy: {', '.join(sheets)}.")
     d = sheets.get("Ngoai_ngu")
     if d is not None and len(d):
-        parts.append(d.assign(metric=d["language"], group="Ngoại ngữ"))
+        parts.append(norm(d).assign(metric=d["language"], group="Ngoại ngữ"))
+    else:  # bản đơn giản: mỗi ngoại ngữ một sheet
+        for lang in ("English", "Japanese", "Chinese", "German"):
+            d = sheets.get(lang)
+            if d is not None and len(d):
+                parts.append(norm(d).assign(metric=lang, group="Ngoại ngữ"))
     if not parts:
         return missing("rq2_bara.py")
     dens = pd.concat(parts, ignore_index=True)
-    dens["small"] = as_bool(dens.small_sample)
+    # thiếu cột small_sample (file xlsx cũ) thì tự tính theo n_jobs < 30
+    dens["small"] = as_bool(dens.small_sample) if "small_sample" in dens.columns else dens.n_jobs < 30
     dens = with_err(dens)
-    st.caption("Mật độ = % JD của nhóm nghề yêu cầu ít nhất 1 skill thuộc nhóm. Cloud/DevOps và AI/LLM lấy mẫu số là JD có hard skill; "
+    st.caption("Mật độ = % JD của nhóm nghề yêu cầu ít nhất 1 skill thuộc nhóm. Cloud/DevOps và AI/ML lấy mẫu số là JD có hard skill; "
                "ngoại ngữ lấy mẫu số là mọi JD của nhóm nghề. Thanh sai số là Wilson 95%.")
-    note("Nhóm AI/LLM tính cả các nhãn lĩnh vực như machine learning, deep learning (khác RQ1 và RQ3 vốn loại các nhãn này), "
-         "vì chính chúng là yêu cầu AI cần đo.")
+    if any("ai_group" in p.columns for p in parts):
+        note("AI/ML (rộng) là toàn bộ nhóm AI/ML của taxonomy; LLM/GenAI và ML/DL truyền thống là hai nhóm con, không loại trừ nhau "
+             "(một JD có thể thuộc cả hai) và không phủ hết nhóm rộng. Nhóm AI tính cả nhãn lĩnh vực (machine learning, deep learning), "
+             "khác RQ1 và RQ3 vốn loại các nhãn này.")
+    else:
+        note("AI/GenAI là một chỉ số gộp mọi skill thuộc nhóm AI/ML của taxonomy (chưa tách riêng AI truyền thống và GenAI). "
+             "Nhóm này tính cả nhãn lĩnh vực (machine learning, deep learning), khác RQ1 và RQ3 vốn loại các nhãn này.")
     hide_small = st.checkbox("Ẩn nhóm nghề có ít JD (cỡ mẫu nhỏ)", True, key="rq2_hide")
     view = dens[~dens.small] if hide_small else dens
     if hide_small and dens.small.any():
@@ -269,20 +303,37 @@ def tab_rq2():
     if ALL_ROLES in n_by_role.index:
         order.append(ALL_ROLES)
     order = [r for r in order if r in set(view.role)]
-    m = view.pivot_table(index="role", columns="metric", values="pct").reindex(order)
+    # Cột heatmap xếp theo nhóm: Cloud/DevOps, AI, rồi các ngoại ngữ đứng cạnh nhau ("Bất kỳ..." ở cuối nhóm ngoại ngữ)
+    mt = view.drop_duplicates("metric")[["metric", "group"]]
+    is_any = mt["metric"].astype(str).str.startswith("Bất kỳ")
+    is_lang = mt["group"] == "Ngoại ngữ"
+    cols_order = (mt[~is_lang]["metric"].tolist() + mt[is_lang & ~is_any]["metric"].tolist()
+                  + mt[is_lang & is_any]["metric"].tolist())
+    m = view.pivot_table(index="role", columns="metric", values="pct").reindex(index=order, columns=cols_order)
     st.plotly_chart(px.imshow(m.round(1), aspect="auto", text_auto=".0f", color_continuous_scale=T.SEQ,
-                              labels=dict(color="% JD"), height=bar_h(len(m), per=30)))
-    metric = st.selectbox("Chỉ số", sorted(view.metric.unique()), key="rq2_metric")
-    v = view[view.metric == metric].sort_values("pct")
-    st.plotly_chart(px.bar(v, x="pct", y="role", orientation="h", error_x="err_plus", error_x_minus="err_minus",
-                           hover_data=["n_matched", "n_denominator"],
-                           labels={"pct": "% JD", "role": "Nhóm nghề"}, title=metric, height=bar_h(len(v))))
-    langs = view[(view.group == "Ngoại ngữ") & (~view.metric.astype(str).str.startswith("Bất kỳ"))]
-    if len(langs):
-        st.plotly_chart(px.bar(langs, x="role", y="pct", color="metric", barmode="group",
-                               error_y="err_plus", error_y_minus="err_minus",
-                               labels={"role": "Nhóm nghề", "pct": "% JD", "metric": "Ngoại ngữ"},
-                               title="Yêu cầu ngoại ngữ theo nhóm nghề"))
+                       labels=dict(color="% JD"), height=bar_h(len(m), per=30)))
+
+    st.subheader("Chi tiết theo từng nhóm chỉ số")
+    st.caption("Thanh sai số là khoảng tin cậy Wilson 95%.")
+    any_lang = view["metric"].astype(str).str.startswith("Bất kỳ")
+    panels = [
+        ("Ngoại ngữ", view[(view["group"] == "Ngoại ngữ") & ~any_lang]),
+        ("AI/GenAI", view[(view["group"] == "Công nghệ") & (view["metric"] != "Cloud/DevOps")]),
+        ("Cloud/DevOps", view[view["metric"] == "Cloud/DevOps"]),
+    ]
+    h = bar_h(len(order) * max([d["metric"].nunique() for _, d in panels] + [1]), per=22)
+    for col, (title, d) in zip(st.columns(3), panels):
+        if d.empty:
+            col.info(f"Chưa có dữ liệu {title}.")
+            continue
+        fig = px.bar(d, x="pct", y="role", color="metric", barmode="group", orientation="h",
+                     error_x="err_plus", error_x_minus="err_minus",
+                     hover_data=["n_matched", "n_denominator"],
+                     category_orders={"role": order[::-1]},
+                     color_discrete_sequence=[T.DARK, T.SAGE, T.TEAL, T.GREEN],
+                     labels={"pct": "% JD", "role": "Nhóm nghề", "metric": "Chỉ số"}, title=title, height=h)
+        fig.update_layout(showlegend=d["metric"].nunique() > 1, legend=dict(orientation="h", y=-0.08, title_text=""))
+        col.plotly_chart(fig)
 
 
 # ----------------------------------------------------------------------------- RQ3: level
@@ -331,8 +382,6 @@ def tab_rq3():
         t2 = tr.assign(err_plus=(tr.trend_ci_high - tr.trend_rho).clip(lower=0), err_minus=(tr.trend_rho - tr.trend_ci_low).clip(lower=0))
         st.plotly_chart(px.bar(t2, x="role", y="trend_rho", error_y="err_plus", error_y_minus="err_minus",
                                labels={"role": "Vị trí", "trend_rho": "Spearman rho (CI 95% bootstrap)"}))
-        st.dataframe(tr.rename(columns={"role": "Vị trí", "n_jobs": "Số JD", "trend_rho": "rho", "trend_ci_low": "CI thấp",
-                                        "trend_ci_high": "CI cao", "trend_p_holm": "p (Holm)"}), hide_index=True)
 
     st.subheader("Kỹ năng hiếm của từng nghề")
     if rare is None or rare.empty:
@@ -340,13 +389,11 @@ def tab_rq3():
     else:
         r2 = rare.assign(err_plus=(rare.n_rare_rarefied_ci_high - rare.n_rare_rarefied_mean).clip(lower=0),
                          err_minus=(rare.n_rare_rarefied_mean - rare.n_rare_rarefied_ci_low).clip(lower=0))
-        l, r = st.columns(2)
-        l.plotly_chart(px.bar(r2, x="role", y="n_rare_rarefied_mean", error_y="err_plus", error_y_minus="err_minus",
-                              labels={"role": "Vị trí", "n_rare_rarefied_mean": "Số skill hiếm (cùng cỡ mẫu)"},
-                              title="Số skill hiếm sau chuẩn hóa cỡ mẫu"))
-        r.plotly_chart(px.bar(rare, x="role", y="share_mentions_rare_pct",
-                              labels={"role": "Vị trí", "share_mentions_rare_pct": "% lượt nhắc là skill hiếm"},
-                              title="Tỷ trọng lượt nhắc skill hiếm"))
+        st.plotly_chart(px.bar(r2, x="role", y="n_rare_rarefied_mean", error_y="err_plus", error_y_minus="err_minus",
+                        hover_data={"share_mentions_rare_pct": ":.1f"},
+                        labels={"role": "Vị trí", "n_rare_rarefied_mean": "Số skill hiếm (cùng cỡ mẫu)",
+                                "share_mentions_rare_pct": "% lượt nhắc là skill hiếm"},
+                        title="Số skill hiếm sau chuẩn hóa cỡ mẫu (rê chuột để xem % lượt nhắc skill hiếm)"))
         st.caption("Skill hiếm = xuất hiện ở dưới 5% JD của chính nghề đó (mặc định). Rarefaction lấy mẫu con cùng cỡ để so công bằng giữa nghề nhiều và ít JD.")
         cols = [c for c in ["role", "n_jobs", "n_skills_present", "n_rare_skills", "pct_rare_of_present", "n_rare_rarefied_mean",
                             "share_mentions_rare_pct", "n_hard_manual_present", "rare_skills"] if c in rare.columns]
@@ -370,7 +417,7 @@ def tab_rq3():
         note("Số skill chỉ có ở level cao vượt ngưỡng P95 của đường cơ sở hoán vị: khó giải thích chỉ bằng ngẫu nhiên.")
     else:
         note("Số skill chỉ có ở level cao không vượt ngưỡng P95 của đường cơ sở hoán vị: chưa đủ bằng chứng là khác ngẫu nhiên.")
-    top = st.slider("Số skill hiển thị", 5, 30, 15, key="rq3_topskill")
+    top = top_n("Số skill hiển thị", len(s), 15, "rq3_topskill", lo=5)
     only_sig = st.checkbox("Chỉ skill có p hiệu chỉnh Holm < 0.05", False, key="rq3_sig")
     v = s[s.p_holm_in_role < 0.05] if only_sig else s
     v = v.sort_values("diff_pp", ascending=False).head(top)
@@ -386,9 +433,6 @@ def tab_rq3():
         heat.columns = [c.replace("pct_", "") for c in heat.columns]
         st.plotly_chart(px.imshow(heat.round(1), aspect="auto", text_auto=".0f", color_continuous_scale=T.SEQ,
                                   labels=dict(color="% JD"), height=bar_h(len(heat), per=22)))
-        with st.expander("Bảng chi tiết"):
-            st.dataframe(v[["skill_label", "n_total", "pct_low", "pct_high", "diff_pp", "fisher_p", "p_holm_in_role",
-                            "only_high", "is_rare_in_role", "is_hard_manual"]], hide_index=True)
 
 
 # ----------------------------------------------------------------------------- RQ4: địa lý
@@ -397,14 +441,20 @@ def tab_rq4():
     if d is None:
         return missing("rq4_geography.py")
     d = d.assign(reliable=as_bool(d.city_sample_reliable))
-    g = d[d.level == SENIOR_PLUS]
+    # Nhãn dòng gộp do rq4_geography.py ghi ("Senior+ (gộp ... bậc trên)"): dò tự động để app không lệch khi script đổi số bậc.
+    # So khớp không phân biệt hoa thường: CSV ghi "senior+ (gộp ...)" (chữ thường).
+    plus = next((x for x in d.level.drop_duplicates() if str(x).strip().lower().startswith("senior+")), SENIOR_PLUS)
+    g = d[d.level == plus]
+    if g.empty:
+        st.warning(f"Không tìm thấy dòng gộp Senior+ trong rq4_city_level.csv. Các bậc có trong file: {', '.join(map(str, d.level.drop_duplicates()))}.")
+        return
     ok = g[g.reliable]
-    st.caption("Senior+ gồm Senior, Lead/Principal và Manager+. Chỉ tính job có cả city và level; đã loại 'Không rõ' và 'Remote'. "
+    st.caption(f"Nhóm gộp đang dùng: {plus}. Chỉ tính job có cả city và level; đã loại 'Không rõ' và 'Remote'. "
                "Hai cách đọc 'tập trung': (a) số job tuyệt đối, (b) tỷ lệ Senior+ trong job của chính thành phố đó.")
     if ok.empty:
         st.info("Không có thành phố nào đủ cỡ mẫu.")
         return
-    topn = st.slider("Số thành phố", 3, 30, 10, key="rq4_top")
+    topn = top_n("Số thành phố", len(ok), 10, "rq4_top")
     l, r = st.columns(2)
     a = ok.sort_values("n_jobs_in_level", ascending=False).head(topn).sort_values("n_jobs_in_level")
     l.plotly_chart(px.bar(a, x="n_jobs_in_level", y="city", orientation="h", title="(a) Số job Senior+ (tuyệt đối)",
@@ -414,20 +464,16 @@ def tab_rq4():
                           hover_data=["n_jobs_city_total"], title="(b) % job của thành phố là Senior+ (tương đối)",
                           labels={"pct_of_city_jobs": "% job", "city": "Thành phố"}, height=bar_h(len(b))))
     cities = a.city.tolist()
-    lv = d[d.city.isin(cities) & (d.level != SENIOR_PLUS)]
+    lv = d[d.city.isin(cities) & (d.level != plus)]
     st.plotly_chart(px.bar(lv, x="city", y="pct_of_city_jobs", color="level", barmode="group",
                            category_orders={"city": cities[::-1]},
                            labels={"pct_of_city_jobs": "% job của thành phố", "city": "Thành phố", "level": "Bậc"},
                            title="Cơ cấu từng bậc (Senior, Lead/Principal, Manager+) theo thành phố"))
-    small = g[~g.reliable].sort_values("n_jobs_city_total", ascending=False)
-    if len(small):
-        with st.expander(f"{len(small)} thành phố dưới ngưỡng mẫu (không dùng để kết luận)"):
-            st.dataframe(small[["city", "n_jobs_city_total", "n_jobs_in_level", "pct_of_city_jobs"]], hide_index=True)
 
 
 # ----------------------------------------------------------------------------- khung chính + điều hướng
-PAGES = {"Tổng quan": tab_overview, "RQ1 Core stack": tab_rq1, "RQ2 Mật độ": tab_rq2,
-         "RQ3 Level": tab_rq3, "RQ4 Địa lý": tab_rq4}
+PAGES = {"Tổng quan": tab_overview, "RQ1 Tổ hợp kỹ năng": tab_rq1, "RQ2 Mật độ Cloud, AI/GenAI, Ngoại ngữ": tab_rq2,
+         "RQ3 Độ rộng kỹ năng theo các bậc": tab_rq3, "RQ4 Thành phố tập trung tuyển nhân sự cao cấp": tab_rq4}
 st.sidebar.title("Điều hướng")
 page = st.sidebar.radio("Chọn trang", list(PAGES))
 st.header(page)

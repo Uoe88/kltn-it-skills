@@ -1,3 +1,4 @@
 ﻿skill_a,implies_b,n_a,n_both,pct_b_given_a,n_b
-pandas,python,34,34,100.0,901
-jetpack_compose,android,23,23,100.0,148
+pandas,python,51,51,100.0,993
+jetpack_compose,android,23,23,100.0,149
+numpy,python,23,23,100.0,993
