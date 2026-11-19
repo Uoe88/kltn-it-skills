@@ -1,12 +1,12 @@
 ﻿role,level,metric,n_jobs,cell_n_small,mean,median,q1,q3,ci_low,ci_high,trend_n,trend_rho,trend_ci_low,trend_ci_high,trend_p_holm
-Backend,TẤT CẢ,n_hard_skills_dedup,137,False,9.307,8.0,5.0,13.0,,,137.0,-0.031,-0.204,0.132,1.0
-Backend,TẤT CẢ,n_hard_skills,137,False,9.788,8.0,5.0,13.0,,,137.0,-0.024,-0.203,0.157,1.0
-Backend,TẤT CẢ,n_skill_groups,137,False,5.19,5.0,4.0,6.0,,,137.0,0.044,-0.129,0.204,1.0
-Backend,TẤT CẢ,n_rare_skills,137,False,0.985,0.0,0.0,1.0,,,137.0,-0.123,-0.281,0.045,0.1925
-Backend,TẤT CẢ,has_rare_skill,137,False,0.46,,,,0.379,0.543,137.0,-0.112,-0.29,0.053,0.3629
-Backend,TẤT CẢ,n_hard_manual,137,False,1.401,1.0,0.0,2.0,,,137.0,0.14,-0.02,0.307,0.4073
-Backend,TẤT CẢ,has_hard_manual,137,False,0.664,,,,0.582,0.738,137.0,0.188,0.034,0.343,0.1127
-Backend,TẤT CẢ,n_tail_skills,137,False,1.007,1.0,0.0,1.0,,,137.0,-0.061,-0.225,0.119,1.0
+Backend,TẤT CẢ,n_hard_skills_dedup,138,False,9.283,8.0,5.0,12.75,,,138.0,-0.036,-0.187,0.123,1.0
+Backend,TẤT CẢ,n_hard_skills,138,False,9.761,8.0,5.0,13.0,,,138.0,-0.029,-0.206,0.137,1.0
+Backend,TẤT CẢ,n_skill_groups,138,False,5.188,5.0,4.0,6.0,,,138.0,0.043,-0.119,0.224,1.0
+Backend,TẤT CẢ,n_rare_skills,138,False,0.986,0.0,0.0,1.0,,,138.0,-0.114,-0.26,0.076,0.2401
+Backend,TẤT CẢ,has_rare_skill,138,False,0.464,,,,0.383,0.547,138.0,-0.099,-0.263,0.059,0.4499
+Backend,TẤT CẢ,n_hard_manual,138,False,1.391,1.0,0.0,2.0,,,138.0,0.125,-0.039,0.305,0.4307
+Backend,TẤT CẢ,has_hard_manual,138,False,0.659,,,,0.577,0.733,138.0,0.169,0.012,0.312,0.1627
+Backend,TẤT CẢ,n_tail_skills,138,False,1.014,1.0,0.0,1.75,,,138.0,-0.047,-0.206,0.112,1.0
 Backend,Entry,n_hard_skills_dedup,17,False,9.353,7.0,3.0,15.0,,,,,,,
 Backend,Entry,n_hard_skills,17,False,9.765,7.0,3.0,15.0,,,,,,,
 Backend,Entry,n_skill_groups,17,False,4.824,5.0,3.0,7.0,,,,,,,
@@ -31,22 +31,22 @@ Backend,Senior,has_rare_skill,70,False,0.5,,,,0.386,0.614,,,,,
 Backend,Senior,n_hard_manual,70,False,1.371,1.0,0.0,2.0,,,,,,,
 Backend,Senior,has_hard_manual,70,False,0.671,,,,0.555,0.77,,,,,
 Backend,Senior,n_tail_skills,70,False,0.986,1.0,0.0,2.0,,,,,,,
-Backend,Lead+,n_hard_skills_dedup,22,False,9.091,9.0,5.5,11.0,,,,,,,
-Backend,Lead+,n_hard_skills,22,False,9.636,10.0,6.25,11.75,,,,,,,
-Backend,Lead+,n_skill_groups,22,False,5.409,5.0,4.25,6.0,,,,,,,
-Backend,Lead+,n_rare_skills,22,False,0.409,0.0,0.0,0.75,,,,,,,
-Backend,Lead+,has_rare_skill,22,False,0.273,,,,0.132,0.482,,,,,
-Backend,Lead+,n_hard_manual,22,False,1.727,1.0,1.0,3.0,,,,,,,
-Backend,Lead+,has_hard_manual,22,False,0.818,,,,0.615,0.927,,,,,
-Backend,Lead+,n_tail_skills,22,False,0.682,0.5,0.0,1.0,,,,,,,
-Frontend,TẤT CẢ,n_hard_skills_dedup,55,False,8.455,8.0,6.0,10.0,,,55.0,0.027,-0.239,0.297,1.0
-Frontend,TẤT CẢ,n_hard_skills,55,False,8.764,8.0,6.0,10.5,,,55.0,0.019,-0.23,0.28,1.0
-Frontend,TẤT CẢ,n_skill_groups,55,False,4.345,4.0,3.0,5.0,,,55.0,0.084,-0.189,0.332,1.0
-Frontend,TẤT CẢ,n_rare_skills,55,False,0.945,0.0,0.0,1.0,,,55.0,0.291,0.044,0.515,0.125
-Frontend,TẤT CẢ,has_rare_skill,55,False,0.309,,,,0.203,0.44,55.0,0.304,0.052,0.538,0.0967
-Frontend,TẤT CẢ,n_hard_manual,55,False,0.255,0.0,0.0,0.0,,,55.0,0.219,-0.02,0.424,0.4073
-Frontend,TẤT CẢ,has_hard_manual,55,False,0.127,,,,0.063,0.24,55.0,0.205,-0.024,0.433,0.2666
-Frontend,TẤT CẢ,n_tail_skills,55,False,0.764,0.0,0.0,1.0,,,55.0,0.051,-0.23,0.284,1.0
+Backend,Lead+,n_hard_skills_dedup,23,False,8.957,9.0,5.5,11.0,,,,,,,
+Backend,Lead+,n_hard_skills,23,False,9.478,10.0,6.0,11.5,,,,,,,
+Backend,Lead+,n_skill_groups,23,False,5.391,5.0,4.5,6.0,,,,,,,
+Backend,Lead+,n_rare_skills,23,False,0.435,0.0,0.0,1.0,,,,,,,
+Backend,Lead+,has_rare_skill,23,False,0.304,,,,0.156,0.509,,,,,
+Backend,Lead+,n_hard_manual,23,False,1.652,1.0,1.0,3.0,,,,,,,
+Backend,Lead+,has_hard_manual,23,False,0.783,,,,0.581,0.903,,,,,
+Backend,Lead+,n_tail_skills,23,False,0.739,1.0,0.0,1.0,,,,,,,
+Frontend,TẤT CẢ,n_hard_skills_dedup,55,False,8.455,8.0,6.0,10.0,,,55.0,0.027,-0.234,0.275,1.0
+Frontend,TẤT CẢ,n_hard_skills,55,False,8.764,8.0,6.0,10.5,,,55.0,0.019,-0.247,0.283,1.0
+Frontend,TẤT CẢ,n_skill_groups,55,False,4.345,4.0,3.0,5.0,,,55.0,0.084,-0.178,0.346,1.0
+Frontend,TẤT CẢ,n_rare_skills,55,False,0.945,0.0,0.0,1.0,,,55.0,0.291,0.041,0.494,0.125
+Frontend,TẤT CẢ,has_rare_skill,55,False,0.309,,,,0.203,0.44,55.0,0.304,0.056,0.502,0.0967
+Frontend,TẤT CẢ,n_hard_manual,55,False,0.255,0.0,0.0,0.0,,,55.0,0.219,-0.039,0.452,0.4307
+Frontend,TẤT CẢ,has_hard_manual,55,False,0.127,,,,0.063,0.24,55.0,0.205,-0.03,0.447,0.2666
+Frontend,TẤT CẢ,n_tail_skills,55,False,0.764,0.0,0.0,1.0,,,55.0,0.051,-0.226,0.305,1.0
 Frontend,Entry,n_hard_skills_dedup,8,True,7.625,8.0,6.75,8.5,,,,,,,
 Frontend,Entry,n_hard_skills,8,True,7.875,8.0,6.75,9.25,,,,,,,
 Frontend,Entry,n_skill_groups,8,True,4.125,4.5,3.0,5.0,,,,,,,
@@ -79,19 +79,19 @@ Frontend,Lead+,has_rare_skill,2,True,1.0,,,,0.342,1.0,,,,,
 Frontend,Lead+,n_hard_manual,2,True,2.0,2.0,1.0,3.0,,,,,,,
 Frontend,Lead+,has_hard_manual,2,True,0.5,,,,0.095,0.905,,,,,
 Frontend,Lead+,n_tail_skills,2,True,1.5,1.5,1.25,1.75,,,,,,,
-Data Engineer,TẤT CẢ,n_hard_skills_dedup,182,False,8.769,8.0,5.0,12.0,,,182.0,-0.057,-0.207,0.088,1.0
-Data Engineer,TẤT CẢ,n_hard_skills,182,False,9.302,9.0,5.0,13.0,,,182.0,-0.06,-0.209,0.089,1.0
-Data Engineer,TẤT CẢ,n_skill_groups,182,False,4.418,4.0,3.0,6.0,,,182.0,-0.025,-0.152,0.116,1.0
-Data Engineer,TẤT CẢ,n_rare_skills,182,False,0.67,0.0,0.0,1.0,,,182.0,0.231,0.08,0.371,0.0085
-Data Engineer,TẤT CẢ,has_rare_skill,182,False,0.412,,,,0.343,0.485,182.0,0.231,0.096,0.374,0.0085
-Data Engineer,TẤT CẢ,n_hard_manual,182,False,2.099,2.0,0.0,4.0,,,182.0,0.074,-0.076,0.212,0.6465
-Data Engineer,TẤT CẢ,has_hard_manual,182,False,0.714,,,,0.645,0.775,182.0,0.186,0.053,0.311,0.0588
-Data Engineer,TẤT CẢ,n_tail_skills,182,False,0.44,0.0,0.0,1.0,,,182.0,-0.059,-0.189,0.08,1.0
+Data Engineer,TẤT CẢ,n_hard_skills_dedup,173,False,8.948,9.0,5.0,12.0,,,173.0,-0.029,-0.186,0.129,1.0
+Data Engineer,TẤT CẢ,n_hard_skills,173,False,9.474,9.0,5.0,14.0,,,173.0,-0.043,-0.197,0.118,1.0
+Data Engineer,TẤT CẢ,n_skill_groups,173,False,4.52,4.0,3.0,6.0,,,173.0,0.027,-0.108,0.164,1.0
+Data Engineer,TẤT CẢ,n_rare_skills,173,False,0.688,0.0,0.0,1.0,,,173.0,0.335,0.193,0.461,0.0
+Data Engineer,TẤT CẢ,has_rare_skill,173,False,0.428,,,,0.356,0.502,173.0,0.33,0.19,0.467,0.0
+Data Engineer,TẤT CẢ,n_hard_manual,173,False,2.133,2.0,0.0,4.0,,,173.0,0.076,-0.073,0.244,0.6458
+Data Engineer,TẤT CẢ,has_hard_manual,173,False,0.717,,,,0.645,0.779,173.0,0.183,0.036,0.325,0.0803
+Data Engineer,TẤT CẢ,n_tail_skills,173,False,0.451,0.0,0.0,1.0,,,173.0,-0.04,-0.187,0.125,1.0
 Data Engineer,Entry,n_hard_skills_dedup,38,False,9.237,9.0,5.0,12.75,,,,,,,
 Data Engineer,Entry,n_hard_skills,38,False,9.763,9.5,5.25,13.5,,,,,,,
 Data Engineer,Entry,n_skill_groups,38,False,4.342,4.0,3.0,5.0,,,,,,,
-Data Engineer,Entry,n_rare_skills,38,False,0.447,0.0,0.0,1.0,,,,,,,
-Data Engineer,Entry,has_rare_skill,38,False,0.289,,,,0.17,0.448,,,,,
+Data Engineer,Entry,n_rare_skills,38,False,0.342,0.0,0.0,0.0,,,,,,,
+Data Engineer,Entry,has_rare_skill,38,False,0.237,,,,0.13,0.392,,,,,
 Data Engineer,Entry,n_hard_manual,38,False,2.0,1.5,0.0,3.0,,,,,,,
 Data Engineer,Entry,has_hard_manual,38,False,0.579,,,,0.422,0.721,,,,,
 Data Engineer,Entry,n_tail_skills,38,False,0.605,0.0,0.0,1.0,,,,,,,
@@ -103,38 +103,38 @@ Data Engineer,Middle,has_rare_skill,10,True,0.1,,,,0.018,0.404,,,,,
 Data Engineer,Middle,n_hard_manual,10,True,1.6,1.0,0.0,3.0,,,,,,,
 Data Engineer,Middle,has_hard_manual,10,True,0.6,,,,0.313,0.832,,,,,
 Data Engineer,Middle,n_tail_skills,10,True,0.2,0.0,0.0,0.0,,,,,,,
-Data Engineer,Senior,n_hard_skills_dedup,109,False,9.064,9.0,5.0,12.0,,,,,,,
-Data Engineer,Senior,n_hard_skills,109,False,9.596,9.0,6.0,14.0,,,,,,,
-Data Engineer,Senior,n_skill_groups,109,False,4.624,5.0,3.0,6.0,,,,,,,
-Data Engineer,Senior,n_rare_skills,109,False,0.679,0.0,0.0,1.0,,,,,,,
-Data Engineer,Senior,has_rare_skill,109,False,0.431,,,,0.342,0.525,,,,,
-Data Engineer,Senior,n_hard_manual,109,False,2.165,2.0,0.0,4.0,,,,,,,
-Data Engineer,Senior,has_hard_manual,109,False,0.743,,,,0.654,0.816,,,,,
-Data Engineer,Senior,n_tail_skills,109,False,0.45,0.0,0.0,1.0,,,,,,,
-Data Engineer,Lead+,n_hard_skills_dedup,25,False,7.36,7.0,4.0,9.0,,,,,,,
-Data Engineer,Lead+,n_hard_skills,25,False,7.76,7.0,4.0,10.0,,,,,,,
-Data Engineer,Lead+,n_skill_groups,25,False,3.8,4.0,3.0,5.0,,,,,,,
-Data Engineer,Lead+,n_rare_skills,25,False,1.12,1.0,0.0,2.0,,,,,,,
-Data Engineer,Lead+,has_rare_skill,25,False,0.64,,,,0.445,0.798,,,,,
-Data Engineer,Lead+,n_hard_manual,25,False,2.16,2.0,1.0,3.0,,,,,,,
-Data Engineer,Lead+,has_hard_manual,25,False,0.84,,,,0.653,0.936,,,,,
-Data Engineer,Lead+,n_tail_skills,25,False,0.24,0.0,0.0,0.0,,,,,,,
-Data Scientist,TẤT CẢ,n_hard_skills_dedup,92,False,7.391,6.0,4.0,10.0,,,92.0,-0.022,-0.22,0.197,1.0
-Data Scientist,TẤT CẢ,n_hard_skills,92,False,7.5,6.0,4.0,10.25,,,92.0,-0.012,-0.211,0.177,1.0
-Data Scientist,TẤT CẢ,n_skill_groups,92,False,4.098,4.0,3.0,6.0,,,92.0,0.057,-0.163,0.265,1.0
-Data Scientist,TẤT CẢ,n_rare_skills,92,False,0.37,0.0,0.0,1.0,,,92.0,0.174,-0.015,0.342,0.1925
-Data Scientist,TẤT CẢ,has_rare_skill,92,False,0.272,,,,0.191,0.37,92.0,0.163,-0.041,0.359,0.3629
-Data Scientist,TẤT CẢ,n_hard_manual,92,False,1.141,1.0,0.0,2.0,,,92.0,0.064,-0.132,0.268,0.6465
-Data Scientist,TẤT CẢ,has_hard_manual,92,False,0.576,,,,0.474,0.672,92.0,0.063,-0.123,0.256,0.5524
-Data Scientist,TẤT CẢ,n_tail_skills,92,False,0.293,0.0,0.0,1.0,,,92.0,0.185,-0.019,0.355,0.3902
-Data Scientist,Entry,n_hard_skills_dedup,25,False,7.04,6.0,3.0,9.0,,,,,,,
-Data Scientist,Entry,n_hard_skills,25,False,7.04,6.0,3.0,9.0,,,,,,,
-Data Scientist,Entry,n_skill_groups,25,False,3.88,4.0,2.0,6.0,,,,,,,
-Data Scientist,Entry,n_rare_skills,25,False,0.12,0.0,0.0,0.0,,,,,,,
-Data Scientist,Entry,has_rare_skill,25,False,0.12,,,,0.042,0.3,,,,,
-Data Scientist,Entry,n_hard_manual,25,False,0.92,1.0,0.0,2.0,,,,,,,
-Data Scientist,Entry,has_hard_manual,25,False,0.52,,,,0.335,0.7,,,,,
-Data Scientist,Entry,n_tail_skills,25,False,0.12,0.0,0.0,0.0,,,,,,,
+Data Engineer,Senior,n_hard_skills_dedup,103,False,9.272,9.0,6.0,12.5,,,,,,,
+Data Engineer,Senior,n_hard_skills,103,False,9.835,10.0,6.0,14.0,,,,,,,
+Data Engineer,Senior,n_skill_groups,103,False,4.728,5.0,3.5,6.0,,,,,,,
+Data Engineer,Senior,n_rare_skills,103,False,0.718,0.0,0.0,1.0,,,,,,,
+Data Engineer,Senior,has_rare_skill,103,False,0.456,,,,0.363,0.552,,,,,
+Data Engineer,Senior,n_hard_manual,103,False,2.233,2.0,1.0,4.0,,,,,,,
+Data Engineer,Senior,has_hard_manual,103,False,0.757,,,,0.666,0.83,,,,,
+Data Engineer,Senior,n_tail_skills,103,False,0.456,0.0,0.0,1.0,,,,,,,
+Data Engineer,Lead+,n_hard_skills_dedup,22,False,7.682,7.0,4.25,9.75,,,,,,,
+Data Engineer,Lead+,n_hard_skills,22,False,7.864,7.0,4.25,11.5,,,,,,,
+Data Engineer,Lead+,n_skill_groups,22,False,4.091,4.0,3.25,5.0,,,,,,,
+Data Engineer,Lead+,n_rare_skills,22,False,1.318,1.0,1.0,2.0,,,,,,,
+Data Engineer,Lead+,has_rare_skill,22,False,0.773,,,,0.566,0.899,,,,,
+Data Engineer,Lead+,n_hard_manual,22,False,2.136,1.5,1.0,3.75,,,,,,,
+Data Engineer,Lead+,has_hard_manual,22,False,0.818,,,,0.615,0.927,,,,,
+Data Engineer,Lead+,n_tail_skills,22,False,0.273,0.0,0.0,0.75,,,,,,,
+Data Scientist,TẤT CẢ,n_hard_skills_dedup,92,False,7.391,6.0,4.0,10.0,,,92.0,-0.048,-0.236,0.139,1.0
+Data Scientist,TẤT CẢ,n_hard_skills,92,False,7.5,6.0,4.0,10.25,,,92.0,-0.037,-0.227,0.184,1.0
+Data Scientist,TẤT CẢ,n_skill_groups,92,False,4.109,4.0,3.0,6.0,,,92.0,0.033,-0.164,0.214,1.0
+Data Scientist,TẤT CẢ,n_rare_skills,92,False,0.37,0.0,0.0,1.0,,,92.0,0.163,-0.017,0.332,0.2401
+Data Scientist,TẤT CẢ,has_rare_skill,92,False,0.272,,,,0.191,0.37,92.0,0.151,-0.081,0.345,0.4499
+Data Scientist,TẤT CẢ,n_hard_manual,92,False,1.152,1.0,0.0,2.0,,,92.0,0.048,-0.183,0.262,0.6491
+Data Scientist,TẤT CẢ,has_hard_manual,92,False,0.587,,,,0.485,0.682,92.0,0.049,-0.146,0.261,0.6431
+Data Scientist,TẤT CẢ,n_tail_skills,92,False,0.293,0.0,0.0,1.0,,,92.0,0.174,-0.022,0.362,0.4844
+Data Scientist,Entry,n_hard_skills_dedup,24,False,7.208,6.5,3.0,9.25,,,,,,,
+Data Scientist,Entry,n_hard_skills,24,False,7.208,6.5,3.0,9.25,,,,,,,
+Data Scientist,Entry,n_skill_groups,24,False,3.958,4.0,2.0,6.0,,,,,,,
+Data Scientist,Entry,n_rare_skills,24,False,0.125,0.0,0.0,0.0,,,,,,,
+Data Scientist,Entry,has_rare_skill,24,False,0.125,,,,0.043,0.31,,,,,
+Data Scientist,Entry,n_hard_manual,24,False,0.958,1.0,0.0,2.0,,,,,,,
+Data Scientist,Entry,has_hard_manual,24,False,0.542,,,,0.351,0.721,,,,,
+Data Scientist,Entry,n_tail_skills,24,False,0.125,0.0,0.0,0.0,,,,,,,
 Data Scientist,Middle,n_hard_skills_dedup,6,True,11.167,12.0,9.75,12.0,,,,,,,
 Data Scientist,Middle,n_hard_skills,6,True,11.167,12.0,9.75,12.0,,,,,,,
 Data Scientist,Middle,n_skill_groups,6,True,5.333,6.0,4.5,6.0,,,,,,,
@@ -143,14 +143,14 @@ Data Scientist,Middle,has_rare_skill,6,True,0.667,,,,0.3,0.903,,,,,
 Data Scientist,Middle,n_hard_manual,6,True,2.167,2.5,1.25,3.0,,,,,,,
 Data Scientist,Middle,has_hard_manual,6,True,0.833,,,,0.436,0.97,,,,,
 Data Scientist,Middle,n_tail_skills,6,True,0.5,0.5,0.0,1.0,,,,,,,
-Data Scientist,Senior,n_hard_skills_dedup,50,False,7.2,6.0,4.0,9.0,,,,,,,
-Data Scientist,Senior,n_hard_skills,50,False,7.36,6.0,4.0,9.75,,,,,,,
-Data Scientist,Senior,n_skill_groups,50,False,3.96,4.0,3.0,5.0,,,,,,,
-Data Scientist,Senior,n_rare_skills,50,False,0.42,0.0,0.0,0.75,,,,,,,
-Data Scientist,Senior,has_rare_skill,50,False,0.26,,,,0.159,0.396,,,,,
-Data Scientist,Senior,n_hard_manual,50,False,1.04,1.0,0.0,2.0,,,,,,,
-Data Scientist,Senior,has_hard_manual,50,False,0.54,,,,0.404,0.67,,,,,
-Data Scientist,Senior,n_tail_skills,50,False,0.32,0.0,0.0,0.75,,,,,,,
+Data Scientist,Senior,n_hard_skills_dedup,51,False,7.118,6.0,4.0,9.0,,,,,,,
+Data Scientist,Senior,n_hard_skills,51,False,7.275,6.0,4.0,9.5,,,,,,,
+Data Scientist,Senior,n_skill_groups,51,False,3.941,4.0,3.0,5.0,,,,,,,
+Data Scientist,Senior,n_rare_skills,51,False,0.412,0.0,0.0,0.5,,,,,,,
+Data Scientist,Senior,has_rare_skill,51,False,0.255,,,,0.155,0.389,,,,,
+Data Scientist,Senior,n_hard_manual,51,False,1.039,1.0,0.0,2.0,,,,,,,
+Data Scientist,Senior,has_hard_manual,51,False,0.549,,,,0.414,0.677,,,,,
+Data Scientist,Senior,n_tail_skills,51,False,0.314,0.0,0.0,0.5,,,,,,,
 Data Scientist,Lead+,n_hard_skills_dedup,11,True,7.0,6.0,4.0,10.0,,,,,,,
 Data Scientist,Lead+,n_hard_skills,11,True,7.182,6.0,4.0,10.0,,,,,,,
 Data Scientist,Lead+,n_skill_groups,11,True,4.545,5.0,3.5,6.0,,,,,,,
@@ -159,22 +159,22 @@ Data Scientist,Lead+,has_rare_skill,11,True,0.455,,,,0.213,0.72,,,,,
 Data Scientist,Lead+,n_hard_manual,11,True,1.545,1.0,0.5,2.5,,,,,,,
 Data Scientist,Lead+,has_hard_manual,11,True,0.727,,,,0.434,0.903,,,,,
 Data Scientist,Lead+,n_tail_skills,11,True,0.455,0.0,0.0,1.0,,,,,,,
-AI Engineer,TẤT CẢ,n_hard_skills_dedup,205,False,5.785,5.0,3.0,7.0,,,205.0,0.003,-0.137,0.146,1.0
-AI Engineer,TẤT CẢ,n_hard_skills,205,False,5.902,5.0,3.0,8.0,,,205.0,-0.001,-0.114,0.148,1.0
-AI Engineer,TẤT CẢ,n_skill_groups,205,False,3.512,3.0,2.0,4.0,,,205.0,0.085,-0.046,0.212,1.0
-AI Engineer,TẤT CẢ,n_rare_skills,205,False,1.083,1.0,0.0,2.0,,,205.0,0.146,0.019,0.279,0.125
-AI Engineer,TẤT CẢ,has_rare_skill,205,False,0.532,,,,0.463,0.599,205.0,0.095,-0.047,0.22,0.3629
-AI Engineer,TẤT CẢ,n_hard_manual,205,False,0.81,0.0,0.0,1.0,,,205.0,0.129,-0.014,0.262,0.3315
-AI Engineer,TẤT CẢ,has_hard_manual,205,False,0.478,,,,0.411,0.546,205.0,0.14,0.009,0.262,0.1364
-AI Engineer,TẤT CẢ,n_tail_skills,205,False,0.585,0.0,0.0,1.0,,,205.0,0.065,-0.076,0.192,1.0
-AI Engineer,Entry,n_hard_skills_dedup,65,False,5.369,5.0,3.0,7.0,,,,,,,
-AI Engineer,Entry,n_hard_skills,65,False,5.462,5.0,3.0,7.0,,,,,,,
-AI Engineer,Entry,n_skill_groups,65,False,3.246,3.0,2.0,4.0,,,,,,,
-AI Engineer,Entry,n_rare_skills,65,False,0.692,0.0,0.0,1.0,,,,,,,
-AI Engineer,Entry,has_rare_skill,65,False,0.462,,,,0.346,0.581,,,,,
-AI Engineer,Entry,n_hard_manual,65,False,0.569,0.0,0.0,1.0,,,,,,,
-AI Engineer,Entry,has_hard_manual,65,False,0.354,,,,0.249,0.475,,,,,
-AI Engineer,Entry,n_tail_skills,65,False,0.446,0.0,0.0,1.0,,,,,,,
+AI Engineer,TẤT CẢ,n_hard_skills_dedup,205,False,5.737,5.0,3.0,7.0,,,205.0,0.005,-0.131,0.127,1.0
+AI Engineer,TẤT CẢ,n_hard_skills,205,False,5.854,5.0,3.0,7.0,,,205.0,0.001,-0.13,0.141,1.0
+AI Engineer,TẤT CẢ,n_skill_groups,205,False,3.502,3.0,2.0,4.0,,,205.0,0.09,-0.044,0.231,1.0
+AI Engineer,TẤT CẢ,n_rare_skills,205,False,1.083,1.0,0.0,2.0,,,205.0,0.143,0.004,0.276,0.125
+AI Engineer,TẤT CẢ,has_rare_skill,205,False,0.532,,,,0.463,0.599,205.0,0.086,-0.058,0.218,0.4499
+AI Engineer,TẤT CẢ,n_hard_manual,205,False,0.8,0.0,0.0,1.0,,,205.0,0.131,-0.02,0.258,0.3047
+AI Engineer,TẤT CẢ,has_hard_manual,205,False,0.473,,,,0.406,0.541,205.0,0.143,0.004,0.279,0.1627
+AI Engineer,TẤT CẢ,n_tail_skills,205,False,0.576,0.0,0.0,1.0,,,205.0,0.066,-0.065,0.191,1.0
+AI Engineer,Entry,n_hard_skills_dedup,66,False,5.333,5.0,3.0,7.0,,,,,,,
+AI Engineer,Entry,n_hard_skills,66,False,5.424,5.0,3.0,7.0,,,,,,,
+AI Engineer,Entry,n_skill_groups,66,False,3.227,3.0,2.0,4.0,,,,,,,
+AI Engineer,Entry,n_rare_skills,66,False,0.697,0.0,0.0,1.0,,,,,,,
+AI Engineer,Entry,has_rare_skill,66,False,0.47,,,,0.354,0.588,,,,,
+AI Engineer,Entry,n_hard_manual,66,False,0.561,0.0,0.0,1.0,,,,,,,
+AI Engineer,Entry,has_hard_manual,66,False,0.348,,,,0.245,0.469,,,,,
+AI Engineer,Entry,n_tail_skills,66,False,0.439,0.0,0.0,1.0,,,,,,,
 AI Engineer,Middle,n_hard_skills_dedup,16,False,6.875,7.0,3.75,8.25,,,,,,,
 AI Engineer,Middle,n_hard_skills,16,False,7.125,7.0,3.75,8.5,,,,,,,
 AI Engineer,Middle,n_skill_groups,16,False,4.0,4.0,2.75,5.0,,,,,,,
@@ -183,14 +183,14 @@ AI Engineer,Middle,has_rare_skill,16,False,0.625,,,,0.386,0.815,,,,,
 AI Engineer,Middle,n_hard_manual,16,False,0.938,1.0,0.0,1.25,,,,,,,
 AI Engineer,Middle,has_hard_manual,16,False,0.625,,,,0.386,0.815,,,,,
 AI Engineer,Middle,n_tail_skills,16,False,1.062,1.0,0.75,2.0,,,,,,,
-AI Engineer,Senior,n_hard_skills_dedup,99,False,5.747,5.0,3.0,7.0,,,,,,,
-AI Engineer,Senior,n_hard_skills,99,False,5.889,5.0,3.0,7.0,,,,,,,
-AI Engineer,Senior,n_skill_groups,99,False,3.535,4.0,2.0,5.0,,,,,,,
-AI Engineer,Senior,n_rare_skills,99,False,1.131,1.0,0.0,2.0,,,,,,,
-AI Engineer,Senior,has_rare_skill,99,False,0.535,,,,0.438,0.63,,,,,
-AI Engineer,Senior,n_hard_manual,99,False,0.859,1.0,0.0,1.0,,,,,,,
-AI Engineer,Senior,has_hard_manual,99,False,0.515,,,,0.418,0.611,,,,,
-AI Engineer,Senior,n_tail_skills,99,False,0.556,0.0,0.0,1.0,,,,,,,
+AI Engineer,Senior,n_hard_skills_dedup,98,False,5.673,5.0,3.0,7.0,,,,,,,
+AI Engineer,Senior,n_hard_skills,98,False,5.816,5.0,3.0,7.0,,,,,,,
+AI Engineer,Senior,n_skill_groups,98,False,3.531,3.5,2.0,5.0,,,,,,,
+AI Engineer,Senior,n_rare_skills,98,False,1.133,1.0,0.0,2.0,,,,,,,
+AI Engineer,Senior,has_rare_skill,98,False,0.531,,,,0.433,0.626,,,,,
+AI Engineer,Senior,n_hard_manual,98,False,0.847,1.0,0.0,1.0,,,,,,,
+AI Engineer,Senior,has_hard_manual,98,False,0.51,,,,0.413,0.607,,,,,
+AI Engineer,Senior,n_tail_skills,98,False,0.541,0.0,0.0,1.0,,,,,,,
 AI Engineer,Lead+,n_hard_skills_dedup,25,False,6.32,4.0,3.0,6.0,,,,,,,
 AI Engineer,Lead+,n_hard_skills,25,False,6.32,4.0,3.0,6.0,,,,,,,
 AI Engineer,Lead+,n_skill_groups,25,False,3.8,3.0,3.0,5.0,,,,,,,

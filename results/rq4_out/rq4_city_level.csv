@@ -1,5 +1,5 @@
 ﻿city,level,n_jobs_in_level,n_jobs_city_total,pct_of_city_jobs,ci_low_pct,ci_high_pct,pct_of_all_senior_plus_jobs,city_sample_reliable
-Hồ Chí Minh,lead+,144,981,14.7,12.6,17.0,,True
+Hồ Chí Minh,lead+,143,981,14.6,12.5,16.9,,True
 Hà Nội,lead+,91,697,13.1,10.8,15.8,,True
 Đà Nẵng,lead+,6,69,8.7,4.0,17.7,,True
 Hà Giang,lead+,1,3,33.3,6.1,79.2,,False
@@ -23,7 +23,7 @@ Bắc Ninh,senior,0,1,0.0,0.0,79.3,,False
 Hà Giang,senior,0,3,0.0,0.0,56.2,,False
 Nam Định,senior,0,1,0.0,0.0,79.3,,False
 Đồng Nai,senior,0,1,0.0,0.0,79.3,,False
-Hồ Chí Minh,senior+ (gộp 2 bậc trên),539,981,54.9,51.8,58.0,57.8,True
+Hồ Chí Minh,senior+ (gộp 2 bậc trên),538,981,54.8,51.7,57.9,57.7,True
 Hà Nội,senior+ (gộp 2 bậc trên),358,697,51.4,47.7,55.1,38.4,True
 Đà Nẵng,senior+ (gộp 2 bậc trên),24,69,34.8,24.6,46.6,2.6,True
 Cần Thơ,senior+ (gộp 2 bậc trên),3,7,42.9,15.8,75.0,0.3,False

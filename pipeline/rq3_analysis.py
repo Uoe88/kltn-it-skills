@@ -29,7 +29,7 @@ from scipy import stats
 
 # Khai báo nhóm nghề và kỹ năng
 TARGET_ROLES = ["Backend", "Frontend", "Data Engineer", "Data Scientist", "AI Engineer"]
-LANGUAGE_SKILL_COLS = {"skill_english", "skill_japanese", "skill_french"}
+LANGUAGE_SKILL_COLS = {"skill_english", "skill_japanese"}
 
 DEFAULT_DOMAIN_COLS = "artificial_intelligence,machine_learning,deep_learning,nlp,computer_vision" #cần loại bỏ khỏi hard skill nếu có
 

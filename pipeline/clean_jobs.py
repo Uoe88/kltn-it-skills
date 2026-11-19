@@ -2,18 +2,17 @@
 clean_jobs.py  làm sạch 
 
 Chạy:
-    python pipeline/clean_jobs.py --input data_private/jobs_raw_labelmissing.xlsx --outdir clean_out --as-of 2026-09-30
+    python pipeline/clean_jobs.py --input data_private/jobs_raw.xlsx --as-of 2026-09-30
 
 Thứ tự xử lý:
     0. Tạo cột `source` từ source_id (báo lỗi nếu source_id lạ), điền job_id trống
        (đầu vào giả định đã sửa lệch cột Xóm Jobs)
     1. Location -> city (tên thành phố/tỉnh chuẩn; địa chỉ dài thì tìm tên thành phố ở vị trí phải nhất)
-    2. Khử trùng lặp theo (title, company, city) đã chuẩn hóa, gộp field thiếu; xuất dedupe_review.csv (cặp nghi trùng
+    2a. Khử trùng lặp theo (title, company, city) đã chuẩn hóa, gộp field thiếu; xuất dedupe_review.csv (cặp nghi trùng
     2b. Điền expertise_category còn thiếu bằng bộ phân loại rule-based (cờ category_model_filled)
     3. Parse số năm kinh nghiệm  (experience_raw -> exp_min / exp_max)
     4. Chuẩn hóa level-> Phân tích level_lo, level_hi -> level group (từ nhãn `level`, hỗ trợ khoảng như "Middle | Senior")
     5. Cờ mâu thuẫn level <-> exp -> xuất jobs_clean.csv + level_map.csv + dedupe_review.csv
-
 """
 import argparse
 import csv  
@@ -63,11 +62,6 @@ def plain(s, keep_symbols="+#") -> str:
 
     s = re.sub(pattern, " ", s)
     return re.sub(r"\s+", " ", s).strip()
-
-
-
-
-
 # --------------------------------------------------------------------------
 # 0. Nguồn + job_id
 # --------------------------------------------------------------------------

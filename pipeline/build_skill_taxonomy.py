@@ -17,7 +17,7 @@ THUẬT TOÁN
          (a) global        : số job >= --min-jobs (mặc định 50)
          (b) role_core     : ở một nhóm nghề có prevalence >= --role-min-pct (8%), >= --role-min-jobs (10) job
                              và lift >= --role-min-lift (1,5)
-         (c) language      : ngoại ngữ trong taxonomy có số job >= --lang-min-jobs (15) -> cột riêng; ngoại ngữ ít hơn
+         (c) language      : ngoại ngữ trong taxonomy có số job >= --lang-min-jobs (25) -> cột riêng; ngoại ngữ ít hơn
                              ngưỡng này không vào binary (vẫn nằm trong taxonomy và được tính vào n_languages)
          (d) prog_language : ngôn ngữ lập trình có >= --prog-min-jobs (25) job
   6. Gộp CISSP / CEH / OSCP / CISM thành cột skill_cert_security, thêm n_languages, ghép metadata và ghi jd_skill_binary.csv
