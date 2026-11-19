@@ -1,14 +1,15 @@
 """
-clean_jobs.py  làm sạch jobs_raw (ITviec + LinkedIn + Xóm Jobs + TopCV)
+clean_jobs.py  làm sạch 
 
 Chạy:
-    python clean_jobs.py --input jobs_raw.xlsx --outdir clean_out --as-of 2026-09-20
+    python pipeline/clean_jobs.py --input data_private/jobs_raw_labelmissing.xlsx --outdir clean_out --as-of 2026-09-30
 
 Thứ tự xử lý:
     0. Tạo cột `source` từ source_id (báo lỗi nếu source_id lạ), điền job_id trống
        (đầu vào giả định đã sửa lệch cột Xóm Jobs)
     1. Location -> city (tên thành phố/tỉnh chuẩn; địa chỉ dài thì tìm tên thành phố ở vị trí phải nhất)
     2. Khử trùng lặp theo (title, company, city) đã chuẩn hóa, gộp field thiếu; xuất dedupe_review.csv (cặp nghi trùng
+    2b. Điền expertise_category còn thiếu bằng bộ phân loại rule-based (cờ category_model_filled)
     3. Parse số năm kinh nghiệm  (experience_raw -> exp_min / exp_max)
     4. Chuẩn hóa level-> Phân tích level_lo, level_hi -> level group (từ nhãn `level`, hỗ trợ khoảng như "Middle | Senior")
     5. Cờ mâu thuẫn level <-> exp -> xuất jobs_clean.csv + level_map.csv + dedupe_review.csv
@@ -91,7 +92,7 @@ def add_source(df: pd.DataFrame):
 # --------------------------------------------------------------------------
 # 1. Location -> city
 # --------------------------------------------------------------------------
-# ạo các biểu thức chính quy để nhận diện tên tỉnh, thành phố.
+# Tạo các biểu thức chính quy để nhận diện tên tỉnh, thành phố.
 CITY_ALIASES = {
     "Hà Nội": ["hanoi"],
     "Hồ Chí Minh": ["hcmc", "tp hcm", "tphcm", "hcm", "sai gon", "saigon"],
@@ -152,7 +153,7 @@ def parse_city(loc, title):
 
 
 # --------------------------------------------------------------------------
-# 2. Dedupe
+# 2a. Dedupe
 # --------------------------------------------------------------------------
 LEGAL_RE = re.compile(r"\b(cong ty|tnhh|co phan|cp|jsc|joint stock company|company limited|co|ltd|llc|inc|"
                       r"corp|corporation|pte|pty|vietnam|viet nam|vn|group|holdings?)\b")
@@ -257,8 +258,6 @@ def dedupe(df: pd.DataFrame):
         base["n_duplicates"] = len(g) - 1
         base["sources_merged"] = "|".join(sorted(g["source"].unique(),
                                                  key=lambda s: SOURCE_PRIORITY.get(s, len(SOURCE_PRIORITY))))
-       
-        
         base["source_job_id"] = "|".join(g["job_id"].astype(str))                          # giữ id gốc để truy vết
         base["source_urls"] = "|".join(g["job_url"].dropna().astype(str).unique())         # giữ URL của mọi bản trùng
         # id ổn định giữa các lần chạy: hash khóa nhóm (xem lưu ý về city suy luận ở đầu file)
@@ -268,6 +267,85 @@ def dedupe(df: pd.DataFrame):
              .drop(columns=["_tk", "_ck", "_grp", "_score", "_sp", "_row_order", "_city"])
              .reset_index(drop=True))
     return out, review
+
+
+# --------------------------------------------------------------------------
+# 2b. Điền expertise_category còn thiếu bằng bộ phân loại rule-based
+#     (chỉ điền dòng trống; dòng đã có nhãn gốc giữ nguyên; thêm 1 cột cờ)
+# --------------------------------------------------------------------------
+# Thứ tự = độ ưu tiên khi tiêu đề khớp nhiều nhóm (nhóm cụ thể đặt trước nhóm chung)
+TITLE_RULES = [
+    ("Architect",      r"architect|kiến trúc"),   # đứng đầu: "Solution Architect ... AI" phải ra Architect, không phải AI Engineer
+    ("Data Scientist", r"data\s*scien|machine learning scientist|research scientist|\bnlp\b scientist"),
+    ("AI Engineer",    r"\bai\b|gen\s*ai|\bml\b|machine learning|deep learning|\bllm\b|computer vision|\bnlp\b|generative|mlops|prompt"),
+    ("Data Engineer",  r"data\s*engineer|\betl\b|big\s*data|data\s*platform|data\s*pipeline|dwh|data\s*warehouse|\bdbt\b|databricks|\bdba\b|database"),
+    ("Data Analyst",   r"data\s*analy|bi\s*(developer|analyst|engineer)|business intelligence|power\s*bi|\breport(ing)?\b.*analy|analytics"),
+    ("Security",       r"secur|pentest|penetration|\bsoc\b|infosec|cyber|an\s*ninh|vulnerab|\bgrc\b"),
+    ("DevOps/SRE",     r"devops|\bsre\b|site reliability|\bsysops\b|cloud engineer|platform engineer|infrastructure|system\s*admin|kubernetes|\bdevsecops\b|release engineer"),
+    ("QA/Tester",      r"\bqa\b|\bqc\b|tester|testing|test engineer|\bsdet\b|automation test|quality (assurance|control)"),
+    ("PM/BA",          r"project manager|product manager|product owner|scrum master|\bpm\b|\bpo\b|business analyst|\bba\b|delivery manager|program manager|\bit\s*manager|engineering manager|team lead"),
+    ("Mobile",         r"mobile|android|\bios\b|flutter|react native|swift|kotlin"),
+    ("Fullstack",      r"full\s*-?\s*stack"),
+    ("Frontend",       r"front\s*-?\s*end|\bui\b|reactjs|react developer|vue|angular|\bweb developer\b|javascript developer"),
+    ("Backend",        r"back\s*-?\s*end|java\b|\.net|golang|\bgo\b|python|php|node|ruby|c#|spring|laravel|django|software (engineer|developer)|api developer"),
+]
+TITLE_RX = [(g, re.compile(p)) for g, p in TITLE_RULES]
+
+# Từ khóa nội dung (skills/requirements/description) dùng khi tiêu đề không khớp rule nào
+CONTENT_KW = {
+    "Data Scientist": ["statistics", "scikit", "sklearn", "hypothesis", "forecast", "modeling", "pandas", "jupyter"],
+    "AI Engineer":    ["pytorch", "tensorflow", "llm", "langchain", "transformers", "deep learning", "nlp", "computer vision", "rag"],
+    "Data Engineer":  ["spark", "airflow", "etl", "kafka", "hadoop", "data warehouse", "snowflake", "bigquery", "dbt"],
+    "Data Analyst":   ["power bi", "tableau", "looker", "sql", "excel", "dashboard", "data visualization"],
+    "Security":       ["owasp", "siem", "penetration", "iso 27001", "vulnerability", "firewall", "soc"],
+    "DevOps/SRE":     ["docker", "kubernetes", "terraform", "ansible", "jenkins", "ci/cd", "prometheus", "grafana", "aws", "azure"],
+    "QA/Tester":      ["selenium", "test case", "testing", "cypress", "jmeter", "postman", "automation test"],
+    "Architect":      ["architecture", "solution design", "system design", "microservices design"],
+    "PM/BA":          ["stakeholder", "requirement", "agile", "scrum", "roadmap", "backlog", "brd", "user story"],
+    "Mobile":         ["android", "ios", "flutter", "react native", "swift", "kotlin"],
+    "Fullstack":      ["full stack", "fullstack", "full-stack"],
+    "Frontend":       ["react", "vue", "angular", "html", "css", "typescript", "next.js"],
+    "Backend":        ["java", "spring", "node.js", "golang", "php", "laravel", "django", ".net", "rest api", "microservice"],
+}
+CONTENT_RX = {g: [re.compile(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])") for k in kws]
+              for g, kws in CONTENT_KW.items()}
+CONTENT_COLS = ("skills_raw", "requirements_raw", "description_raw")
+CONTENT_MIN_SCORE = 2     # cần >= 2 lượt khớp từ khóa nội dung mới gán nhãn
+
+
+def classify_category(row):
+    """Trả nhóm nghề cho 1 dòng (tiêu đề trước, nội dung sau); không đủ căn cứ -> None."""
+    t = re.sub(r"\s+", " ", str(row["job_title"]).lower()) if pd.notna(row["job_title"]) else ""
+    for g, rx in TITLE_RX:
+        if rx.search(t):
+            return g
+    text = " ".join(re.sub(r"\s+", " ", str(row[c]).lower()) for c in CONTENT_COLS if pd.notna(row[c]))
+    score = {g: sum(len(rx.findall(text)) for rx in rxs) for g, rxs in CONTENT_RX.items()}
+    g, v = max(score.items(), key=lambda kv: kv[1])
+    return g if v >= CONTENT_MIN_SCORE else None
+
+
+def missing_category(col: pd.Series) -> pd.Series:
+    """True ở ô thiếu nhãn: NaN, chuỗi rỗng/khoảng trắng, hoặc placeholder ("nan", "none", "n/a"...)."""
+    c = col.astype("object")
+    return c.isna() | c.astype(str).str.strip().str.lower().isin(["", "nan", "none", "null", "n/a", "na", "-"])
+
+
+def fill_category(df: pd.DataFrame) -> pd.DataFrame:
+    """Chỉ điền expertise_category ở dòng đang trống. Cờ category_model_filled=True cho dòng được mô hình gán."""
+    df = df.copy()
+    # "thiếu" gồm cả NaN, chuỗi rỗng/khoảng trắng và các placeholder như "nan", "none", "n/a" (ô bị xóa tay trong Excel)
+    missing = missing_category(df["expertise_category"])
+    df.loc[missing, "expertise_category"] = np.nan
+    pred = df.loc[missing].apply(classify_category, axis=1)
+    df["expertise_category"] = df["expertise_category"].astype("object")
+    df.loc[missing, "expertise_category"] = pred
+    df["category_model_filled"] = missing & df["expertise_category"].notna()
+    # in 20 tiêu đề còn trống để rà tay / bổ sung rule
+    left = df[df["expertise_category"].isna()]
+    if len(left):
+        print(f"[2b] còn {len(left)} dòng chưa gán được, ví dụ:", left["job_title"].head(20).tolist())
+    return df
 
 
 # --------------------------------------------------------------------------
@@ -403,7 +481,7 @@ def main():
     rep.append("[1] City (trước dedupe): " + df["city"].value_counts().to_dict().__str__())
     rep.append("    city_source: " + df["city_source"].value_counts().to_dict().__str__())
 
-    # 2 Khử trùng lặp tin tuyển dụng, hợp nhất thông tin và xuất danh sách các cặp nghi trùng
+    # 2a Khử trùng lặp tin tuyển dụng, hợp nhất thông tin và xuất danh sách các cặp nghi trùng
     n0 = len(df)     
     df, review = dedupe(df)
     review.to_csv(out / "dedupe_review.csv", index=False, encoding="utf-8-sig", quoting=csv.QUOTE_NONNUMERIC)
@@ -418,6 +496,36 @@ def main():
     print(f"[PHỄU] Gộp trùng cùng nguồn : -{same}  -> còn {n_raw - same}")
     print(f"[PHỄU] Gộp trùng khác nguồn : -{cross} -> còn {len(df)}")
 
+    # 2b Điền expertise_category còn thiếu (sau dedupe)
+    # Thống kê số JD thiếu nhãn sau khi gộp trùng
+    n_miss_after_dedupe = int(
+        missing_category(df["expertise_category"]).sum()
+    )
+
+    # Bổ sung nhãn category bằng mô hình
+    df = fill_category(df)
+
+    # Thống kê kết quả sau khi điền nhãn
+    n_category_filled = int(df["category_model_filled"].sum())
+    n_miss_after_fill = int(
+        missing_category(df["expertise_category"]).sum()
+    )
+    n_category_total = len(df)
+
+    # Ghi báo cáo
+    rep.append(
+        f"[2b] expertise_category: thiếu sau dedupe {n_miss_after_dedupe} "
+        f"-> mô hình điền {n_category_filled}; "
+        f"còn thiếu sau điền {n_miss_after_fill}"
+    )
+
+    # In thống kê chi tiết
+    print("\n[2b] THỐNG KÊ BỔ SUNG NHÃN CATEGORY")
+    print(f"  JD sau gộp trùng: {n_category_total}")
+    print(f"  JD thiếu nhãn sau gộp trùng: {n_miss_after_dedupe}")
+    print(f"  JD được mô hình điền nhãn: {n_category_filled}")
+    print(f"  JD còn thiếu nhãn sau khi điền: {n_miss_after_fill}")
+    print(f"  JD đã có nhãn sau khi điền: {n_category_total - n_miss_after_fill}")
     # 3 Trích xuất số năm kinh nghiệm và phân nhóm kinh nghiệm
     df = add_experience(df)
     rep.append(f"[3] Exp: có {df.exp_min.notna().sum()}, thiếu {df.exp_min.isna().sum()}")
@@ -433,20 +541,15 @@ def main():
     df["level_exp_conflict"] = ((df["level_hi"] == 0) & (df["exp_min"] >= 5)) | \
                                ((df["level_lo"] >= 2) & (df["exp_min"] <= 1))
     rep.append(f"    mâu thuẫn level↔exp cần rà tay: {int(df['level_exp_conflict'].sum())}")
-    # cảnh báo khác
-    fut = (df["crawled_at"] > as_of + pd.Timedelta(days=1)).sum()
-    rep.append(f"[!] crawled_at: {df.crawled_at.min()} -> {df.crawled_at.max()}; "
-               f"{fut} dòng có crawled_at sau {as_of.date()} (kiểm tra đồng hồ máy crawl)")
-    rep.append(f"[!] expertise_category trống: {df.expertise_category.isna().sum()}; "
-               f"skills_raw trống: {df.skills_raw.isna().sum()}; city 'Không rõ': {(df.city == 'Không rõ').sum()}")
-    # 
+
+    # thống kê tổng hợp phễu lọc: từ thô -> parse city -> dedupe -> parse exp/level
     print(f"[PHỄU] Sau parse kinh nghiệm / chuẩn hóa level: {len(df)} (không loại dòng)")
     print(f"[PHỄU] JD sạch: {len(df)}  (tổng bị loại: {n_raw - len(df)})")
     assert n_raw - len(df) == same + cross, "phễu không khớp"
     cols = ["job_uid", "source", "job_title", "company_name", "city", "city_source","city_inferred", "n_duplicates", "source_job_id",
             "level_group", "level_lo", "level_hi", "level_exp_conflict",
             "exp_min", "exp_max", "exp_group", 
-            "expertise_category", "skills_raw", "requirements_raw", "description_raw",
+            "expertise_category", "category_model_filled", "skills_raw", "requirements_raw", "description_raw",
             "job_url", "updated_at", "deadline", "crawled_at", "sources_merged",
             "coalesced_from", "merge_conflict", "source_urls"] 
 

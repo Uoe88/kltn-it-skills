@@ -1,7 +1,7 @@
 
 """Chạy rq1_analysis, rq2_bara, rq3_analysis, rq4_geography và ghi kết quả vào results/ cho dashboard đọc.
 
-Cách chạy (chỉ còn MỘT file đầu vào, do build_skill_taxonomy.py tạo ra):
+Cách chạy 
     python pipeline/run_all.py --input data_private/jd_skill_binary.csv --taxonomy data_private/skill_taxonomy.csv
 Đặt run_all.py cùng thư mục với 4 script rq*. Cần: pandas, numpy, scipy, openpyxl (rq2 ghi .xlsx).
 """
