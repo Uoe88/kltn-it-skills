@@ -69,8 +69,8 @@ C++,C++,31,Programming Language,hard
 CEH,CEH,30,Certification,hard
 CI/CD,CI/CD,708,DevOps & Infra,hard
 ci/cd,CI/CD,1,DevOps & Infra,hard
-CISM,CISM,23,Certification,hard
-CISSP,CISSP,35,Certification,hard
+CISM,CISM,24,Certification,hard
+CISSP,CISSP,36,Certification,hard
 CQRS,CQRS,12,Architecture & API,hard
 cqrs,CQRS,1,Architecture & API,hard
 CRM,CRM,32,Business & Domain,hard
@@ -99,7 +99,7 @@ Communication Skills,Communication,1,Soft Skill,soft
 CompTIA,CompTIA,12,Certification,hard
 COMPTIA,CompTIA,1,Certification,hard
 Computer Vision,Computer Vision,47,AI/ML,hard
-computer vision,Computer Vision,34,AI/ML,hard
+computer vision,Computer Vision,33,AI/ML,hard
 OpenCV,Computer Vision,3,AI/ML,hard
 Confluence,Confluence,35,Methodology & Tools,hard
 Consulting,Consulting,15,BA/PM & Product,hard
@@ -114,7 +114,7 @@ Information Security,Cybersecurity,10,Security,hard
 Cypress,Cypress,23,Testing/QA,hard
 Embedded C,C|Embedded,6,Programming Language,hard
 DAST,DAST,18,Security,hard
-DLP,DLP,27,Security,hard
+DLP,DLP,28,Security,hard
 Dart,Dart,18,Programming Language,hard
 Data Analysis,Data Analysis,40,Data Analytics & BI,hard
 Data Lake,Data Lake,34,Data Engineering,hard
@@ -148,13 +148,13 @@ docker,Docker,4,DevOps & Infra,hard
 DDD,Domain-Driven Design,21,Architecture & API,hard
 Domain-Driven Design,Domain-Driven Design,2,Architecture & API,hard
 DynamoDB,DynamoDB|AWS|NoSQL,14,Database & Storage,hard
-EDR,EDR,8,Security,hard
+EDR,EDR,7,Security,hard
 ELK,ELK,57,DevOps & Infra,hard
 ELK Stack,ELK,1,DevOps & Infra,hard
 ERP,ERP,43,Business & Domain,hard
 ETL,ETL/ELT,181,Data Engineering,hard
 ELT,ETL/ELT,84,Data Engineering,hard
-Elasticsearch,Elasticsearch,49,Database & Storage,hard
+Elasticsearch,Elasticsearch,50,Database & Storage,hard
 OpenSearch,Elasticsearch,15,Database & Storage,hard
 ElasticSearch,Elasticsearch,8,Database & Storage,hard
 Embedded,Embedded,11,Other Tech,hard
@@ -179,7 +179,7 @@ ExpressJS,Express,3,Backend Framework,hard
 FastAPI,FastAPI,59,Backend Framework,hard
 Figma,Figma,39,Design/UI-UX,hard
 Firebase,Firebase,30,Cloud,hard
-Firewall,Firewall,10,Security,hard
+Firewall,Firewall,9,Security,hard
 Flask,Flask,22,Backend Framework,hard
 Flink,Flink,32,Data Engineering,hard
 Flutter,Flutter,61,Mobile,hard
@@ -197,10 +197,10 @@ Gen AI,Generative AI,1,AI/ML,hard
 Git,Git,291,Methodology & Tools,hard
 GIT,Git,11,Methodology & Tools,hard
 git,Git,8,Methodology & Tools,hard
-GitHub,GitHub,187,Methodology & Tools,hard
+GitHub,GitHub,188,Methodology & Tools,hard
 Github,GitHub,11,Methodology & Tools,hard
 github,GitHub,2,Methodology & Tools,hard
-GitHub Actions,GitHub Actions|CI/CD,92,DevOps & Infra,hard
+GitHub Actions,GitHub Actions|CI/CD,93,DevOps & Infra,hard
 Github Actions,GitHub Actions|CI/CD,2,DevOps & Infra,hard
 GitHub actions,GitHub Actions|CI/CD,1,DevOps & Infra,hard
 Copilot,GitHub Copilot,103,AI Dev Tools,hard
@@ -232,15 +232,15 @@ hive,Hive,1,Data Engineering,hard
 Hugging Face,Hugging Face,4,AI/ML,hard
 Keycloak,IAM,7,Security,hard
 Okta,IAM,4,Security,hard
-Identity & Access Management,IAM,4,Security,hard
-IPS,IDS/IPS,23,Security,hard
-IDS,IDS/IPS,20,Security,hard
+Identity & Access Management,IAM,3,Security,hard
+IPS,IDS/IPS,24,Security,hard
+IDS,IDS/IPS,21,Security,hard
 IDS/IPS,IDS/IPS,6,Security,hard
 ISO 27001,ISO 27001,52,Security,hard
 ISO27001,ISO 27001,4,Security,hard
 IT Support,IT Support,7,Other Tech,hard
 ITIL Foundation,ITIL,3,Certification,hard
-Incident Response,Incident Response,7,Security,hard
+Incident Response,Incident Response,6,Security,hard
 Informatica,Informatica,4,Data Engineering,hard
 Integration test,Integration Testing,4,Testing/QA,hard
 Istio,Istio,6,DevOps & Infra,hard
@@ -251,10 +251,10 @@ Junit,JUnit,2,Testing/QA,hard
 JWT,JWT,47,Security,hard
 Japanese,Japanese,19,Soft Skill,soft
 Japanese IT Communication,Japanese,10,Soft Skill,soft
-Java,Java,465,Programming Language,hard
+Java,Java,466,Programming Language,hard
 JAVA,Java,5,Programming Language,hard
 java,Java,2,Programming Language,hard
-JavaScript,JavaScript,286,Programming Language,hard
+JavaScript,JavaScript,287,Programming Language,hard
 Javascript,JavaScript,16,Programming Language,hard
 javascript,JavaScript,2,Programming Language,hard
 JAVASCRIPT,JavaScript,1,Programming Language,hard
@@ -281,14 +281,14 @@ LLM,LLM,188,AI/ML,hard
 LangChain,LangChain,19,AI/ML,hard
 Langchain,LangChain,1,AI/ML,hard
 Laravel,Laravel,20,Backend Framework,hard
-leadership,Leadership,143,Soft Skill,soft
+leadership,Leadership,144,Soft Skill,soft
 Leadership,Leadership,84,Soft Skill,soft
 Linux,Linux,71,DevOps & Infra,hard
 Unix,Linux,1,DevOps & Infra,hard
 Looker,Looker,32,Data Analytics & BI,hard
 Looker Studio,Looker,16,Data Analytics & BI,hard
-MLOps,MLOps,99,AI/ML,hard
-MLflow,MLflow,25,AI/ML,hard
+MLOps,MLOps,98,AI/ML,hard
+MLflow,MLflow,24,AI/ML,hard
 MLFlow,MLflow,1,AI/ML,hard
 Mlflow,MLflow,1,AI/ML,hard
 MVC,MVC,5,Architecture & API,hard
@@ -319,11 +319,11 @@ MyBatis,MyBatis,3,Backend Framework,hard
 MySQL,MySQL,212,Database & Storage,hard
 Mysql,MySQL,4,Database & Storage,hard
 MYSQL,MySQL,1,Database & Storage,hard
-NIST,NIST,25,Security,hard
+NIST,NIST,26,Security,hard
 NLP,NLP,78,AI/ML,hard
 Neo4j,Neo4j,4,Database & Storage,hard
 NestJS,NestJS,36,Backend Framework,hard
-Networking,Networking,31,DevOps & Infra,hard
+Networking,Networking,30,DevOps & Infra,hard
 Next.js,Next.js|React,78,Frontend,hard
 NextJS,Next.js|React,23,Frontend,hard
 Nginx,Nginx,24,DevOps & Infra,hard
@@ -331,7 +331,7 @@ NGINX,Nginx,4,DevOps & Infra,hard
 nginx,Nginx,1,DevOps & Infra,hard
 NiFi,NiFi,4,Data Engineering,hard
 Nmap,Nmap,5,Security,hard
-NoSQL,NoSQL,120,Database & Storage,hard
+NoSQL,NoSQL,121,Database & Storage,hard
 noSQL,NoSQL,2,Database & Storage,hard
 Node.js,Node.js,120,Backend Framework,hard
 NodeJS,Node.js,65,Backend Framework,hard
@@ -342,10 +342,10 @@ numpy,NumPy,4,AI/ML,hard
 Nuxt.js,Nuxt.js,9,Frontend,hard
 Nuxt,Nuxt.js,5,Frontend,hard
 OAuth2,OAuth,30,Security,hard
-OAuth,OAuth,23,Security,hard
+OAuth,OAuth,24,Security,hard
 OCR,OCR,5,AI/ML,hard
 OOP,OOP,27,Architecture & API,hard
-OSCP,OSCP,25,Certification,hard
+OSCP,OSCP,26,Certification,hard
 OWASP,OWASP,44,Security,hard
 Objective-C,Objective-C,12,Programming Language,hard
 Objective C,Objective-C,1,Programming Language,hard
@@ -381,7 +381,7 @@ power bi,Power BI,1,Data Analytics & BI,hard
 PowerPoint,PowerPoint,3,Methodology & Tools,hard
 PowerShell,PowerShell,33,Programming Language,hard
 Presale,Presales,6,BA/PM & Product,hard
-problem-solving,Problem Solving,199,Soft Skill,soft
+problem-solving,Problem Solving,200,Soft Skill,soft
 problem solving,Problem Solving,12,Soft Skill,soft
 Problem-Solving,Problem Solving,9,Soft Skill,soft
 Problem Solving,Problem Solving,5,Soft Skill,soft
@@ -397,16 +397,16 @@ Pub/Sub,Pub/Sub,17,Data Engineering,hard
 pub/sub,Pub/Sub,2,Data Engineering,hard
 PubSub,Pub/Sub,1,Data Engineering,hard
 Pulumi,Pulumi,5,DevOps & Infra,hard
-PyTorch,PyTorch,90,AI/ML,hard
+PyTorch,PyTorch,89,AI/ML,hard
 Pytorch,PyTorch,1,AI/ML,hard
-Python,Python,963,Programming Language,hard
-python,Python,29,Programming Language,hard
+Python,Python,964,Programming Language,hard
+python,Python,28,Programming Language,hard
 PYTHON,Python,1,Programming Language,hard
 Qlik,Qlik,12,Data Analytics & BI,hard
 R,R,82,Programming Language,hard
-r,R,53,Programming Language,hard
+r,R,52,Programming Language,hard
 RAG,RAG,58,AI/ML,hard
-API,REST API,116,Architecture & API,hard
+API,REST API,115,Architecture & API,hard
 APIs,REST API,60,Architecture & API,hard
 REST API,REST API,46,Architecture & API,hard
 Web API,REST API,7,Architecture & API,hard
@@ -460,7 +460,7 @@ SQLite,SQLite,8,Database & Storage,hard
 SRS,SRS,11,BA/PM & Product,hard
 SSIS,SSIS,4,Data Engineering,hard
 SSO,SSO,30,Security,hard
-SageMaker,SageMaker|AWS,12,AI/ML,hard
+SageMaker,SageMaker|AWS,11,AI/ML,hard
 Sagemaker,SageMaker|AWS,2,AI/ML,hard
 SCSS,Sass/SCSS,7,Frontend,hard
 SASS,Sass/SCSS,6,Frontend,hard
@@ -517,7 +517,7 @@ Talend,Talend,4,Data Engineering,hard
 Team Management,Team Management,51,Soft Skill,soft
 teamwork,Teamwork,55,Soft Skill,soft
 Teamwork,Teamwork,9,Soft Skill,soft
-TensorFlow,TensorFlow,75,AI/ML,hard
+TensorFlow,TensorFlow,74,AI/ML,hard
 Keras,TensorFlow,1,AI/ML,hard
 Tensorflow,TensorFlow,1,AI/ML,hard
 tensorFlow,TensorFlow,1,AI/ML,hard
@@ -543,7 +543,7 @@ VBA,VBA,7,Programming Language,hard
 VMware,VMware,6,DevOps & Infra,hard
 Vault,Vault,19,DevOps & Infra,hard
 vault,Vault,1,DevOps & Infra,hard
-Vertex AI,Vertex AI|GCP,18,AI/ML,hard
+Vertex AI,Vertex AI|GCP,17,AI/ML,hard
 Vite,Vite,12,Frontend,hard
 Vue,Vue,79,Frontend,hard
 VueJS,Vue,19,Frontend,hard
